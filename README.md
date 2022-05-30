@@ -16,7 +16,7 @@
 - **Windows (PowerShell):**	10, 2012, 2016
 
 ## Pre-requisites
-* Python 3.8+
+* Python 3.7+
 
 ## Permissions
 * The user used to execute the tool has to have "Organization Administrator" or "Product Administrator" on all the maintained products and "Organization Auditor" permissions.

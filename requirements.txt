@@ -15,4 +15,3 @@ urllib3==1.26.9
 vsts==0.1.25
 ws-sdk==0.9.3
 zope.interface==5.4.0
-wheel
