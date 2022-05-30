@@ -6,9 +6,9 @@ import time
 import uuid
 from configparser import ConfigParser
 
-from _version import __tool_name__, __version__,__description__
-from config import *
-from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
+from ws_wi_sync._version import __tool_name__, __version__,__description__
+from ws_wi_sync.config import *
+from ws_wi_sync.core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
 
 logger = logging.getLogger("Sync Run")
 logging.getLogger('urllib3').setLevel(logging.INFO)
