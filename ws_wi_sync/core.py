@@ -9,8 +9,8 @@ from vsts.vss_connection import VssConnection
 from vsts.work_item_tracking.v4_1.models.wiql import Wiql
 import requests
 from configparser import ConfigParser
-from _version import __description__, __tool_name__, __version__
-from ws_wi_sync.config import *
+from _version import __tool_name__, __version__
+from config import *
 from ws_sdk import WS
 
 logging.basicConfig(level=logging.DEBUG if bool(os.environ.get("DEBUG", "false")) is True else logging.INFO,
