@@ -5,7 +5,7 @@ import time
 import datetime
 import json
 from configparser import ConfigParser
-from ws_wi_sync._version import  __tool_name__, __version__, __description__
+from _version import  __tool_name__, __version__, __description__
 from ws_wi_sync.core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
 from ws_wi_sync.config import *
 

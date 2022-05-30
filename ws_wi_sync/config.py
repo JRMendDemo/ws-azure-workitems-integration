@@ -24,7 +24,7 @@ class Config:
     wsproducts : str
     wsprojects : str
     initial_sync : bool
-    initial_startdate : str
+    initialstartdate : str
 
     def conf_json(self):
         res = {

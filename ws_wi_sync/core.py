@@ -9,7 +9,7 @@ from vsts.vss_connection import VssConnection
 from vsts.work_item_tracking.v4_1.models.wiql import Wiql
 import requests
 from configparser import ConfigParser
-from ws_wi_sync._version import __description__, __tool_name__, __version__
+from _version import __description__, __tool_name__, __version__
 from ws_wi_sync.config import *
 from ws_sdk import WS
 
