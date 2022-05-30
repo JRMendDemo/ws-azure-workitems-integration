@@ -2,16 +2,23 @@ import datetime
 import json
 import logging
 import os
+import sys
 import time
 import uuid
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
 from configparser import ConfigParser
 
-from ws_wi_sync._version import __tool_name__, __version__,__description__
-from ws_wi_sync.config import *
-from ws_wi_sync.core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
+from requests import __version__
+from ws_sdk import WS
+
+from _version import __tool_name__, __version__, __description__
+from config import *
+from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
 
 logger = logging.getLogger("Sync Run")
-
 logging.getLogger('urllib3').setLevel(logging.INFO)
 conf = None
 ws_name = f"ws_{__tool_name__}"
