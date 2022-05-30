@@ -20,6 +20,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set Environment Variables
+      run: |
+          TOOL_NAME=$(echo '${{ github.repository }}' |awk -F '/' '{gsub(/-/, "_", $0) ;print $NF}')
+          echo "TOOL_NAME=$TOOL_NAME" >> $GITHUB_ENV
+          echo "RELEASE=false" >> $GITHUB_ENV
+          echo "VERSION=0.0.0.ci0" >> $GITHUB_ENV
+          echo "TOOL_DIR=$TOOL_NAME" >> $GITHUB_ENV
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            echo "VERSION=$(echo ${{github.ref}} |  sed -r 's/^[\/a-zA-z-]+//')" >> $GITHUB_ENV
+            if [[ $VERSION != *@(a|b)* ]]; then
+              echo "RELEASE=true" >> $GITHUB_ENV
+            fi
+          fi
+    - uses: actions/checkout@v2
+    - name: Set package version
+      run: |
+        sed -E -i  "s/^__version__ = \"[a-z0-9\.]+\"/__version__ = \"$VERSION\"/g"  ${{ env.TOOL_DIR }}/_version.py
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
