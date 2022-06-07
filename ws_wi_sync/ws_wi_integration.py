@@ -11,7 +11,7 @@ sys.path.append(file_dir)
 
 from configparser import ConfigParser
 
-from requests import __version__
+#from requests import __version__
 from ws_sdk import WS
 
 from _version import __tool_name__, __version__, __description__
@@ -31,6 +31,7 @@ def main():
         conf = startup()
     config = ConfigParser()
     if conf.initial_sync:
+        prepare_json_links()
         logger.info("Initial sync process is started")
         init_stdate = "2000-01-01"
         try:
