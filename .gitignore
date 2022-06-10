@@ -16,6 +16,10 @@ target/
 *.png
 *.tar.gz
 *.url
+params__.config
+r.txt
+.whitesource
+PAT_PS_MEND.txt
 
 # Excluded Files - Naming Convention
 local-env.*
