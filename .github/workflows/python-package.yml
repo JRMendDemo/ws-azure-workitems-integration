@@ -34,7 +34,7 @@ jobs:
             fi
           fi
           echo ${{github.ref}}         
-          ls ./ws-wi-integration/ws_wi_sync
+          ls 
     - uses: actions/checkout@v2
     - name: Set package version
       run: |
