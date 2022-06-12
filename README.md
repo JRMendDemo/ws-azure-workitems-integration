@@ -26,7 +26,7 @@
 ## Installation and Execution from PyPi (recommended):
 1. Install by executing: `pip install ws-wi-integration`
 2. Configure the appropriate parameters either by using in `params.config`.
-3. Execute the tool (`ws_wi_integration`). 
+3. Execute the tool (`wi_integration`). 
 
 ## Installation and Execution from GitHub:
 1. Download and unzip **ws-wi-integration.zip** 
