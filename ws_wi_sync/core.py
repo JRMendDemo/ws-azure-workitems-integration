@@ -6,6 +6,10 @@ import sys
 from msrest.authentication import BasicAuthentication
 from vsts.vss_connection import VssConnection
 
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+
 from vsts.work_item_tracking.v4_1.models.wiql import Wiql
 import requests
 from configparser import ConfigParser
