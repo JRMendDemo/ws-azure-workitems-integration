@@ -12,7 +12,7 @@ sys.path.append(file_dir)
 from configparser import ConfigParser
 
 #from requests import __version__
-from ws_sdk import WS
+#from ws_sdk import WS
 
 from _version import __tool_name__, __version__, __description__
 from config import *

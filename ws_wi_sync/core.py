@@ -236,7 +236,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
             lib_id = prj_el['library']['keyId']
             # lib_uuid= prj_el['library']['keyUuid']
             lib_url = prj_el['library']['url']
-            lib_name = prj_el['library']['name']
+            lib_name = prj_el['library']['filename']
             lib_ver = prj_el['library']['version']
             for i, policy_el in enumerate(prj_el['policyViolations']):
                 issue_id = policy_el['issueUuid']
@@ -291,7 +291,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                     update_ws_issue(issue_id, prj_token, exist_id)
                 count_item += 1
 
-        return "Work Items were created and updated successfully"
+        return f"{count_item-1} Work Items were created or updated successfully"
     except Exception as err:
         return f"Internal error was proceeded. Details : {err}"
 
@@ -326,7 +326,7 @@ def run_sync(st_date: str, end_date: str, in_script : bool = False):
         create_wi(prj_el[0], prj_el[1], st_date, end_date)
 
     if len(res) > 0:
-        return f"Created/updated {len(res)} projects"
+        return f"Proceed {len(res)} project(s)"
     else:
         return "Nothing to create now"
 
