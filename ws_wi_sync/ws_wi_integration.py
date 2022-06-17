@@ -31,6 +31,7 @@ def main():
         conf = startup()
     config = ConfigParser()
     if conf.initial_sync:
+        config.read(conf_file)
         prepare_json_links()
         logger.info("Initial sync process is started")
         init_stdate = "2000-01-01"
@@ -39,10 +40,16 @@ def main():
         except:
             pass
 
+        time_delta = config['DEFAULT'].getint("utcdelta", 0)
+        now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
+        todate = now.strftime("%Y-%m-%d %H:%M:%S")
 
         logger.info(run_sync(init_stdate,"2099-01-01" , True))
         logger.info(update_wi_in_thread())
         logger.info("Initial sync was proceeded successfully")
+        config.set(section="DEFAULT", option="LastRun", value=todate)
+        with open(conf_file, 'w') as configfile:
+            config.write(configfile)
     else:
         if os.path.exists(conf_file):
             logger.info("Sync process is started")
