@@ -14,7 +14,6 @@ def parse_args():
     parser.add_argument('-ao', '--azureorg', help="Azure Org", dest='azure_org', default=os.environ.get("azure_org"),required=True)
     parser.add_argument('-ap', '--azurepart', help="Azure PAT", dest='azure_pat', required=True)
     parser.add_argument('-m', '--type', help="Modification Type", dest='m_type', default=os.environ.get("m_type", 'POLICY_MATCH'))
-    parser.add_argument('-lr', '--lastrun', help="Last Run", dest='last_run', required=True)
     parser.add_argument('-utc', '--utcdelta', help="UTC delta", dest='utc_delta', required=True)
     parser.add_argument('-st', '--synctime', help="Sync Tyme", dest='sync_time', required=True)
     parser.add_argument('-sr', '--syncrun', help="Sync Run", dest='sync_run', default=True)
@@ -33,7 +32,6 @@ def main():
     if os.path.exists(conf_file):
         config = ConfigParser()
         config.read(conf_file)
-        config.set(section="DEFAULT", option="LastRun", value=args.last_run[0:10]+" "+args.last_run[10:])
         config.set(section="DEFAULT", option="wsuserkey", value=args.ws_user_key)
         config.set(section="DEFAULT", option="wsorgtoken", value=args.ws_org_token)
         config.set(section="DEFAULT", option="wsurl", value=args.ws_url)
