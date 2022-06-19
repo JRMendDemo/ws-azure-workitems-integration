@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 schedules:
-  - cron: '* * */20 * *'
+  - cron: '* * */$(synctime) * *'
     displayName: Min Trigger
     branches:
       include:
