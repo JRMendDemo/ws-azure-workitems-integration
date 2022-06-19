@@ -22,6 +22,6 @@ steps:
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -st $(synctime) -sr $(syncrun) -is $(initialsync) -id $(initialstartdate) -apj $(azureproject) -wpj $(wsprojects)
   displayName: 'Run a multi-line script'
+- script: python ws_wi_sync/ws_wi_integration.py
