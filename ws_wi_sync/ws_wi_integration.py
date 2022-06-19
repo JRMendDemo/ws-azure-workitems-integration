@@ -53,13 +53,14 @@ def main():
     else:
         if os.path.exists(conf_file):
             logger.info("Sync process is started")
-            sync_run = True
+            #sync_run = True
             prepare_json_links()
-            while sync_run:
-                config.read(conf_file)
-                last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
-                sync_time = config['DEFAULT'].getint("SyncTime", 10)
-                sync_run =  config['DEFAULT'].getboolean("SyncRun", False)
+            #while sync_run:
+            config.read(conf_file)
+            last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
+            sync_time = config['DEFAULT'].getint("SyncTime", 10)
+            sync_run =  config['DEFAULT'].getboolean("SyncRun", False)
+            if sync_run:
                 time_delta = config['DEFAULT'].getint("utcdelta",0)
                 now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
                 todate = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -70,7 +71,9 @@ def main():
                 with open(conf_file, 'w') as configfile:
                     config.write(configfile)
                 logger.info(f"Next run in {sync_time} minutes")
-                time.sleep(sync_time*60)
+                #time.sleep(sync_time*60)
+            else:
+                logger.info(f"Sync run is not on")
         else:
             logger.error("Config file was not found")
             exit(-1)
