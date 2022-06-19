@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 schedules:
-  - cron: '$(CronValue)'
+  - cron: "*/30 * * * *"
     displayName: Scheduled running
     branches:
       include:
