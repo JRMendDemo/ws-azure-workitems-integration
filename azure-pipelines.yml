@@ -5,7 +5,7 @@
 
 schedules:
   - cron: '* * */2 * *'
-    displayName: Min Trigger
+    displayName: Scheduled running
     branches:
       include:
         - master
