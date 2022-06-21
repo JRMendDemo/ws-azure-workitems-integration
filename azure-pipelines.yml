@@ -5,7 +5,7 @@
 
 schedules:
   - cron: "*/30 * * * *"
-    displayName: Scheduled running
+    displayName: Scheduled running syncronization script
     branches:
       include:
         - master
