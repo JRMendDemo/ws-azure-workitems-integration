@@ -4,8 +4,8 @@
 # https://aka.ms/yaml
 
 schedules:
-  - cron: '* * */20 * *'
-    displayName: Min Trigger
+  - cron: "*/30 * * * *"
+    displayName: Scheduled running
     branches:
       include:
         - master
