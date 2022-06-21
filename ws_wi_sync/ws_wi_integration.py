@@ -70,7 +70,7 @@ def main():
                 config.set(section="DEFAULT", option="LastRun", value=todate)
                 with open(conf_file, 'w') as configfile:
                     config.write(configfile)
-                logger.info(f"Next run in {sync_time} minutes")
+                #logger.info(f"Next run in {sync_time} minutes")
                 #time.sleep(sync_time*60)
             else:
                 logger.info(f"Sync run is not on")

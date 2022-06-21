@@ -305,7 +305,7 @@ def run_sync(st_date: str, end_date: str, in_script : bool = False):
         f = open("../links.json")
         sync_data = json.load(f)
         f.close()
-    except Exception as err:
+    except:
         sync_data = {}
 
     res = []
