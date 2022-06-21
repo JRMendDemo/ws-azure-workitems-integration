@@ -20,7 +20,7 @@ pool:
 
 steps:
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
-  displayName: 'Install dependicies'
+  displayName: 'Install dependecies'
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -sr $(syncrun) -is $(initialsync) -id $(initialstartdate) -apj $(azureproject) -wpj $(wsprojects)
   displayName: 'Preparation parmas.config'
