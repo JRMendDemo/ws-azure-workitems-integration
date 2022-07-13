@@ -8,7 +8,7 @@ sys.path.append(file_dir)
 from ws_sdk import WS
 
 conf_file = "./params.config"
-__tool_name__ = "WI plugin"
+#__tool_name__ = "WI plugin"
 
 @dataclass
 class Config:
