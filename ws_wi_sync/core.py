@@ -40,7 +40,7 @@ def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
         startup()
     try:
         rt = WS.call_ws_api(self=conf.ws_conn, request_type="fetchProjectPolicyIssues",
-                            kv_dict={"projectToken": prj_token, "policyActionType": "CREATE_ISSUE"})
+                            kv_dict={"projectToken": prj_token, "policyActionType": "CREATE_ISSUE", "fromDateTime" : sdate, "toDateTime" : edate})
         rt_res = [rt['product']['productName'], rt['project']['projectName']]
         for rt_el_val in rt['issues']:
             try:
@@ -48,8 +48,9 @@ def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
             except:
                 enb = False
 
-            if (rt_el_val['policyViolations'][0]['lastModified'] >= sdate) and (
-                    rt_el_val['policyViolations'][0]['lastModified'] <= edate) and enb:
+            #if (rt_el_val['policyViolations'][0]['lastModified'] >= sdate) and (
+            #        rt_el_val['policyViolations'][0]['lastModified'] <= edate) and enb:
+            if enb:
                 rt_res.append(rt_el_val)
     except Exception as err:
         rt_res = ["Internal error", f"{err}"]
@@ -64,8 +65,8 @@ def get_prj_list_modified(fromdate: str, todate: str):
     try:
         mdf_types = conf.modification_types.split(',')
         rt = WS.call_ws_api(self=conf.ws_conn, request_type="getOrganizationLastModifiedProjects",
-                            kv_dict={"fromDateTime": fromdate, "toDateTime": todate,
-                                     "modificationTypes": mdf_types, "includeRequestToken": False})
+                            kv_dict={"fromDateTime": fromdate, "modificationTypes": mdf_types, "toDateTime": todate,
+                                      "includeRequestToken": False})
         return rt
     except Exception as err:
         logger.error(f"Internal error: {err}")
@@ -334,15 +335,6 @@ def run_sync(st_date: str, end_date: str, in_script : bool = False):
     else:
         return "Nothing to create now"
 
-    '''
-    if in_script:
-        if res is None:
-            return "Nothing to create now"
-        else:
-            return "Work Items were created successfully"
-    else:
-        return "Work Items were created successfully"
-    '''
 
 def get_keys_by_value(dictOfElements, valueToFind):
     list_of_items = dictOfElements.items()
@@ -364,22 +356,21 @@ def startup():
             ws_user_key=get_conf_value(config['DEFAULT'].get("WsUserKey"), os.environ.get("WS_USER_KEY")),
             ws_org_token=get_conf_value(config['DEFAULT'].get("WsOrgToken"), os.environ.get("WS_ORG_TOKEN")),
             ws_url=get_conf_value(config['DEFAULT'].get("WsUrl"), os.environ.get("WS_URL")),
-            azure_project=get_conf_value(config['links'].get("azureproject"), os.environ.get("AZURE_PROJECT")),
             wsproducts=get_conf_value(config['links'].get("wsproducts"), os.environ.get("WS_PRODUCTS")),
             wsprojects=get_conf_value(config['links'].get("wsprojects"), os.environ.get("WS_PROJECTS")),
-            azure_url=get_conf_value(config['DEFAULT'].get('AzureUrl'), os.environ.get("Azure_Url")),
-            azure_org=get_conf_value(config['DEFAULT'].get('AzureOrg'), os.environ.get("Azure_Org")),
-            #azure_project=get_conf_value(config['DEFAULT'].get('AzureProject'), os.environ.get("Azure_Project")),
-            azure_pat=get_conf_value(config['DEFAULT'].get('AzurePat'), os.environ.get("Azure_Pat")),
+            azure_url=get_conf_value(config['DEFAULT'].get('AzureUrl'), os.environ.get("AZURE_URL")),
+            azure_org=get_conf_value(config['DEFAULT'].get('AzureOrg'), os.environ.get("AZURE_ORG")),
+            azure_pat=get_conf_value(config['DEFAULT'].get('AzurePat'), os.environ.get("AZURE_PAT")),
+            azure_project=get_conf_value(config['links'].get("azureproject"), os.environ.get("AZURE_PROJECT")),
             modification_types=get_conf_value(config['DEFAULT'].get('modificationTypes'),
                                               os.environ.get("modification_Types")),
-            dry_run=config['DEFAULT'].getboolean("DryRun", False),
-            sync_run=config['DEFAULT'].getboolean("SyncRun", False),
-            sync_time=config['DEFAULT'].getint("SyncTime", 10),
+            #dry_run=config['DEFAULT'].getboolean("DryRun", False),
+            #sync_run=config['DEFAULT'].getboolean("SyncRun", False),
+            #sync_time=config['DEFAULT'].getint("SyncTime", 10),
             last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
-            initial_sync = config['DEFAULT'].getboolean("initialsync", False),
-            initial_startdate = get_conf_value(config['DEFAULT'].get("InitialStartdate"), os.environ.get("Initial_Start")),
+            #initial_sync = config['DEFAULT'].getboolean("initialsync", False),
+            #initial_startdate = get_conf_value(config['DEFAULT'].get("InitialStartdate"), os.environ.get("Initial_Start")),
             ws_conn=None
         )
         try:

@@ -20,16 +20,16 @@ class Config:
     azure_project: str
     azure_pat: str
     modification_types: list
-    dry_run: bool
+    #dry_run: bool
     ws_conn: WS
-    sync_time : int
+    #sync_time : int
     utc_delta : int
-    sync_run : bool
+    #sync_run : bool
     last_run : str
     wsproducts : str
     wsprojects : str
-    initial_sync : bool
-    initial_startdate : str
+    #initial_sync : bool
+    #initial_startdate : str
 
     def conf_json(self):
         res = {
@@ -41,9 +41,9 @@ class Config:
             "azure_project" : self.azure_project,
             "azure_pat" : self.azure_pat,
             "modification_types" : self.modification_types,
-            "dry_run" : self.dry_run,
-            "sync_time" : self.sync_time,
-            "sync_run" : self.sync_run,
+            #"dry_run" : self.dry_run,
+            #"sync_time" : self.sync_time,
+            #"sync_run" : self.sync_run,
             "utc_delta" : self.utc_delta,
             "last_run" : self.last_run,
         }
