@@ -1,5 +1,5 @@
 from setuptools import find_packages, setup
-from ws_wi_sync._version import __version__, __description__, __tool_name__
+from ws_azure_workitems_integration._version import __version__, __description__, __tool_name__
 
 ws_name = f"ws_{__tool_name__}"
 with open("requirements.txt",'r', encoding='UTF-8', errors='ignore') as file:
