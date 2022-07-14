@@ -26,5 +26,5 @@ steps:
   displayName: 'Preparation params.config'
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
-- script: cat ../links.json
+- script: cat ./links.json
   displayName: Test
