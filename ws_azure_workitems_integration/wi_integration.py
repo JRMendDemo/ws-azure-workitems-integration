@@ -63,7 +63,7 @@ def main():
         now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
         todate = now.strftime("%Y-%m-%d %H:%M:%S")
         time_sync = (now-datetime.datetime.strptime(last_run, "%Y-%m-%d %H:%M:%S")).total_seconds()/3600 #in hours
-        time_sync = time_sync if time_sync < 1 else 1
+        time_sync = time_sync if time_sync > 1 else 1
 
         logger.info(run_sync((now - datetime.timedelta(hours=time_sync)).strftime("%Y-%m-%d %H:%M:%S"),todate, True))
         logger.info(update_wi_in_thread())
