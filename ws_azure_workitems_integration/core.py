@@ -63,10 +63,16 @@ def get_prj_list_modified(fromdate: str, todate: str):
     if conf is None:
         startup()
     try:
-        mdf_types = conf.modification_types.split(',')
-        rt = WS.call_ws_api(self=conf.ws_conn, request_type="getOrganizationLastModifiedProjects",
-                            kv_dict={"fromDateTime": fromdate, "modificationTypes": mdf_types, "toDateTime": todate,
-                                      "includeRequestToken": False})
+        try:
+            mdf_types = conf.modification_types.split(',')
+            rt = WS.call_ws_api(self=conf.ws_conn, request_type="getOrganizationLastModifiedProjects",
+                                kv_dict={"fromDateTime": fromdate, "modificationTypes": mdf_types, "toDateTime": todate,
+                                         "includeRequestToken": False})
+        except:
+            rt = WS.call_ws_api(self=conf.ws_conn, request_type="getOrganizationLastModifiedProjects",
+                                kv_dict={"fromDateTime": fromdate, "toDateTime": todate,
+                                         "includeRequestToken": False})
+
         return rt
     except Exception as err:
         logger.error(f"Internal error: {err}")
