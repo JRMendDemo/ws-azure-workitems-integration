@@ -4,7 +4,7 @@
 # https://aka.ms/yaml
 
 schedules:
-  - cron: "*/30 * * * *"
+  - cron: "0 */1 * * *"
     displayName: Scheduled running syncronization script
     branches:
       include:
