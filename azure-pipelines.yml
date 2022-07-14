@@ -24,5 +24,5 @@ steps:
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects)
   displayName: 'Preparation parmas.config'
-- script: python ws_azure_workitems_integration/ws_wi_integration.py
+- script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
