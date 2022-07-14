@@ -258,11 +258,11 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                 except:
                     vul_name = ""
                 try:
-                    vul_severity = policy_el['vulnerability']['severity']
+                    vul_severity = policy_el['vulnerability']['cvss3_severity']
                 except:
                     vul_severity = ""
                 try:
-                    vul_score = policy_el['vulnerability']['score']
+                    vul_score = policy_el['vulnerability']['cvss3_score']
                 except:
                     vul_score = ""
                 try:
