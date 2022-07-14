@@ -88,7 +88,7 @@ def prepare_json_links():
         prd_lst =[]
     prj_lst = []
     try:
-        f = open("../links.json")
+        f = open("./links.json")
         res_json = json.load(f)
         f.close()
     except:
@@ -125,7 +125,7 @@ def prepare_json_links():
 
         res_json[f"{new_ind}"] = el_json
 
-    with open('../links.json', 'w') as outfile:
+    with open('./links.json', 'w') as outfile:
         json.dump(res_json, outfile)
 
     return res_json

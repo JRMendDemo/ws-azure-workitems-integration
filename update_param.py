@@ -52,6 +52,8 @@ def main():
 
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
+    else:
+        print("File not found")
 
 if __name__ == '__main__':
     main()
