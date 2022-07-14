@@ -38,7 +38,8 @@ def main():
         config.set(section="DEFAULT", option="azureurl", value=args.azure_url)
         config.set(section="DEFAULT", option="azureorg", value=args.azure_org)
         config.set(section="DEFAULT", option="azurepat", value=args.azure_pat)
-        config.set(section="DEFAULT", option="modificationtypes", value=args.m_type)
+        mod_type = "" if args.m_type == "All" else args.m_type
+        config.set(section="DEFAULT", option="modificationtypes", value=mod_type)
         config.set(section="DEFAULT", option="utcdelta", value=args.utc_delta)
         #config.set(section="DEFAULT", option="synctime", value=args.sync_time)
         #config.set(section="DEFAULT", option="syncrun", value=args.sync_run)
