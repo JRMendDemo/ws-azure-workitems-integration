@@ -31,7 +31,7 @@ steps:
   displayName: 'Preparation params.config'
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa $(azurearea)
-  condition: eq(0,length($(wsprojects)))
+  condition: eq(0,length('$(wsprojects)'))
   displayName: 'Preparation params.config'
 
 - script: echo 'Test$(wsprojects)test'
