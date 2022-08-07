@@ -23,19 +23,19 @@ steps:
   displayName: 'Install dependecies'
 
 - script: echo 'Need to define Product or Project'
-  condition: and(eq('$(wsproducts)' ,''), eq('$(wsprojects)' ,''))
+  condition: and(le(length('$(wsproducts)') ,10), le(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa $(azurearea)
-  condition: and(eq('$(wsproducts)' ,''), ne('$(wsprojects)' ,''))
+  condition: and(le(length('$(wsproducts)') ,10), ge(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa $(azurearea)
-  condition: and(ne('$(wsproducts)' ,''), eq('$(wsprojects)' ,''))
+  condition: and(ge(length('$(wsproducts)') ,10), le(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
 - script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa $(azurearea)
-  condition: and(ne('$(wsproducts)' ,''), ne('$(wsprojects)' ,''))
+  condition: and(ge(length('$(wsproducts)') ,10), ge(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
