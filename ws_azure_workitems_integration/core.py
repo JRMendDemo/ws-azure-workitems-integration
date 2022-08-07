@@ -81,6 +81,7 @@ def get_prj_list_modified(fromdate: str, todate: str):
 
 def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", project: str = "", cmd_type: str ="?"):
     global conf
+    errorcode = 0
     if conf is None:
         startup()
     try:
@@ -99,10 +100,17 @@ def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", projec
                               headers={'Content-Type': 'application/json-patch+json'},
                               auth=('', personal_access_token))
         res = json.loads(r.text)
+        try:
+            msg = res['message']
+            logger.error(f"Error was raised. The reason: {msg}")
+            errorcode = 1
+        except:
+            pass
     except Exception as err:
+        errorcode = 1
         res = {"Internal error": f"{err}"}
 
-    return res
+    return res, errorcode
 
 
 def check_wi_id(id: str):
@@ -145,7 +153,7 @@ def update_wi_in_thread():
 
         id_str = id_str[:-1] if len(wiql_results) > 0 else ""
         if id_str != "":
-            wi = run_azure_api(api_type="GET", api=f"wit/workitems?ids={id_str}&$expand=Relations", data={}, project=conf.azure_project,cmd_type="&")
+            wi, errcode = run_azure_api(api_type="GET", api=f"wit/workitems?ids={id_str}&$expand=Relations", data={}, project=conf.azure_project,cmd_type="&")
             for wq_el in wi['value']:
                 issue_id = wq_el['id']
                 issue_wi_title = wq_el['fields']['System.Title']
@@ -174,7 +182,7 @@ def update_wi_in_thread():
 
 def get_azure_prj_lst():
     try:
-        azure_prj_list = run_azure_api(api_type="GET", api="projects")
+        azure_prj_list, errcode = run_azure_api(api_type="GET", api="projects")
         res = []
         for prj in azure_prj_list['value']:
             res.append((prj['id'], prj['name']))
@@ -221,7 +229,7 @@ def update_ws_issue(issueid: str, prj_token: str, exist_id: int):
     if conf is None:
         startup()
     try:
-        wi = run_azure_api(api_type="GET", api=f"wit/workitems/{exist_id}", data={}, project=conf.azure_project)
+        wi, errcode = run_azure_api(api_type="GET", api=f"wit/workitems/{exist_id}", data={}, project=conf.azure_project)
         url = wi['url'][0:wi['url'].find("apis")] + f"workitems/edit/{wi['id']}"
         ext_issues = [{"identifier": f"WS Issue_{issueid}",
                        "url": url,
@@ -237,6 +245,7 @@ def update_ws_issue(issueid: str, prj_token: str, exist_id: int):
 
 
 def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
+    global conf
     try:
         ws_prj = fetch_prj_policy(prj_token, sdate, edate)
         prd_name = ws_prj[0]
@@ -296,13 +305,25 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                             }
                         }
                     ]
-                    run_azure_api(api_type="POST", api="wit/workitems/$task", data=data, project=azure_prj)
-                    logger.info(f"Work Item {count_item} created")
+                    if not (conf.azure_area is None or conf.azure_area == ""):
+                        data.append(
+                            {
+                                "op": "add",
+                                "path": "/fields/System.AreaPath",
+                                "value": f"{conf.azure_area}"
+                            }
+                        )
+                    try:
+                        r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task", data=data, project=azure_prj)
+                        if errcode == 0:
+                            logger.info(f"Work Item {count_item} created")
+                    except Exception as err:
+                        logger.error(f"Error was proceeded during creation: {err}")
                 else:
                     update_ws_issue(issue_id, prj_token, exist_id)
                 count_item += 1
-
-        return f"{count_item-1} Work Items were created or updated successfully"
+        if errcode == 0:
+            return f"{count_item-1} Work Items were created or updated successfully"
     except Exception as err:
         return f"Internal error was proceeded. Details : {err}"
 
@@ -375,6 +396,7 @@ def startup():
             #sync_time=config['DEFAULT'].getint("SyncTime", 10),
             last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
+            azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
             #initial_sync = config['DEFAULT'].getboolean("initialsync", False),
             #initial_startdate = get_conf_value(config['DEFAULT'].get("InitialStartdate"), os.environ.get("Initial_Start")),
             ws_conn=None

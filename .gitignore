@@ -17,6 +17,7 @@ target/
 *.tar.gz
 *.url
 .whitesource
+params.config
 
 # Excluded Files - Naming Convention
 local-env.*

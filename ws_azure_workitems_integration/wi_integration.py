@@ -12,12 +12,11 @@ from configparser import ConfigParser
 
 from _version import __tool_name__, __version__, __description__
 from config import *
-from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup
+from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup, run_azure_api
 
 logger = logging.getLogger("Sync Run")
 logging.getLogger('urllib3').setLevel(logging.INFO)
 conf = None
-#ws_name = f"ws_{__tool_name__}"
 
 
 def main():
@@ -99,7 +98,9 @@ def prepare_json_links():
             for prj_one in pr_el[1:]:
                 prj_lst.append(prj_one)
 
-    for el_prj in conf.wsprojects.split(','):
+    conf_prj = "" if conf.wsprojects is None else conf.wsprojects
+
+    for el_prj in conf_prj:
         rt = WS.call_ws_api(self=conf.ws_conn, request_type="getProjectTags", kv_dict={"projectToken": el_prj})
         el_json = {
             el_prj : rt['projectTags'][0]['name'],
