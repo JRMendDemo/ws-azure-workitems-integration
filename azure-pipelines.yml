@@ -34,7 +34,7 @@ steps:
   condition: and(ge(length('$(wsproducts)') ,10), le(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
-- script: echo length('$(wsprojects)')
+- script: echo 'length('$(wsprojects)')'
 #python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa $(azurearea)
   condition: and(ge(length('$(wsproducts)') ,10), ge(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
