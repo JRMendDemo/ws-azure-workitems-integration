@@ -34,6 +34,7 @@ wsurl = https://saas.whitesourcesoftware.com
 azureurl = https://dev.azure.com/  
 azureorg = **Your Azure Org**  
 azurepat = **Your Azure PAT (Personal Access Token)**  
+azurearea = **FULL** path of Azure Area  
 modificationtypes = POLICY_MATCH
 utcdelta = 0   
 azureproject = **Name of your Azure project**  
@@ -47,15 +48,18 @@ wsprojects = **List of your Mend product's tokens.**  Separated by a comma
 3. **azureurl** is the URL of the Azure DevOps cloud platform. The default value is https://dev.azure.com/  
 4. **azurepat** is Personal Access Token for your Azure account.
    1. The instruction for getting PAT is here: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows  
-5. **wsurl** is the URL of the Mend cloud platform. The default value is https://saas.whitesourcesoftware.com
-6. **modificationtypes** is a List of possible issue types which can be used in the sync process  
+5. **azurearea** is Full path of Area section in Work Item.
+   1. Example. The area value could be like this **"SomeProject\SomeArea_1\SomeArea_2"**
+   2. If the value is undefined, the default value will be used.
+6. **wsurl** is the URL of the Mend cloud platform. The default value is https://saas.whitesourcesoftware.com
+7. **modificationtypes** is a List of possible issue types which can be used in the sync process  
    1. Possible values are : **INVENTORY,METADATA,SCAN,POLICY_MATCH,SCAN_COMMENT,SOURCE_FILE_MATCH** or **All** for all types 
    2. Please, pay attention that values should be provided **without** spaces as described above
-7. **utcdelta** is a delta between the local time of your **server** and UTC 
+8. **utcdelta** is a delta between the local time of your **server** and UTC 
    1. For example, the delta between local Israel time and UTS is **-3** hours, but if your Mend's server uses UTC time then the UTC delta should be set to 0  
-8. **wsproducts** is a List of all your product's tokens that should be INCLUDED in the Sync process. List separated by a comma      
-9. **wsprojects** is a List of all your project's tokens that should be INCLUDED in the Sync process. List separated by a comma
-   1. Example
+9. **wsproducts** is a List of all your product's tokens that should be INCLUDED in the Sync process. List separated by a comma      
+10. **wsprojects** is a List of all your project's tokens that should be INCLUDED in the Sync process. List separated by a comma
+    1. Example
 ```mermaid
 graph TD
 Product_1 --> Project_1

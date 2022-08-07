@@ -28,6 +28,7 @@ class Config:
     last_run : str
     wsproducts : str
     wsprojects : str
+    azure_area : str
     #initial_sync : bool
     #initial_startdate : str
 
@@ -40,6 +41,7 @@ class Config:
             "azure_org" : self.azure_org,
             "azure_project" : self.azure_project,
             "azure_pat" : self.azure_pat,
+            "azure_area" : self.azure_area,
             "modification_types" : self.modification_types,
             #"dry_run" : self.dry_run,
             #"sync_time" : self.sync_time,

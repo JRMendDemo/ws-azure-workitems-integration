@@ -22,7 +22,7 @@ steps:
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependecies'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects)
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa $(azurearea)
   displayName: 'Preparation params.config'
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'

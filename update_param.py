@@ -20,6 +20,7 @@ def parse_args():
     #parser.add_argument('-is', '--initialsync', help="Initial Sync", dest='initial_sync', default=False)
     #parser.add_argument('-id', '--initialstartdate', help="Initial Start Date", dest='initial_start_date', required=True)
     parser.add_argument('-apj', '--azureproject', help="Azure Prj", dest='azure_prj', required=True)
+    parser.add_argument('-aa', '--azurearea', help="Azure Area", dest='azure_area', default="")
     parser.add_argument('-wp', '--wsproducts', help="WS Prd", dest='ws_prd', default="")
     parser.add_argument('-wpj', '--wsprojects', help="WS Prj", dest='ws_prj',default="")
     arguments = parser.parse_args()
@@ -41,6 +42,7 @@ def main():
         mod_type = "" if args.m_type == "All" else args.m_type
         config.set(section="DEFAULT", option="modificationtypes", value=mod_type)
         config.set(section="DEFAULT", option="utcdelta", value=args.utc_delta)
+        config.set(section="DEFAULT", option="azurearea", value=args.azure_area)
         #config.set(section="DEFAULT", option="synctime", value=args.sync_time)
         #config.set(section="DEFAULT", option="syncrun", value=args.sync_run)
         #config.set(section="DEFAULT", option="initialsync", value=args.initial_sync)
@@ -53,7 +55,7 @@ def main():
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
     else:
-        print("File not found")
+        print("Configuration file (params.config) not found")
 
 if __name__ == '__main__':
     main()
