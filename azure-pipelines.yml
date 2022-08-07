@@ -19,8 +19,8 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
-  displayName: 'Install dependecies'
+#- script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
+#  displayName: 'Install dependecies'
 
 - script: echo 'Need to define Product or Project'
   condition: and(le(length('$(wsproducts)') ,10), le(length('$(wsprojects)') ,10))
@@ -34,10 +34,10 @@ steps:
   condition: and('$(wsproducts)','$(wsprojects)')
   displayName: 'Preparation params.config'
 
-- script: echo 'ge(length('$(wsprojects)') ,10)'
+- script: echo length($(wsprojects))
 #python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa $(azurearea)
   condition: and(ge(length('$(wsproducts)') ,10), ge(length('$(wsprojects)') ,10))
   displayName: 'Preparation params.config'
 
-- script: python ws_azure_workitems_integration/wi_integration.py
-  displayName: 'Running sync tool'
+#- script: python ws_azure_workitems_integration/wi_integration.py
+#  displayName: 'Running sync tool'
