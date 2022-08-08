@@ -51,6 +51,7 @@ wsprojects = **List of your Mend product's tokens.**  Separated by a comma
 5. **azurearea** is Full path of Area section in Work Item.
    1. Example. The area value could be like this **"SomeProject\\\SomeArea_1\\\SomeArea_2"**
       1. Please, pay attention that the **slash needs to be escaped as shown in the example**
+      2. if Area path contains **spaces** then the path must be enclosed in single quotes
    2. If the value is undefined, the default value will be used.
 6. **wsurl** is the URL of the Mend cloud platform. The default value is https://saas.whitesourcesoftware.com
 7. **modificationtypes** is a List of possible issue types which can be used in the sync process  
