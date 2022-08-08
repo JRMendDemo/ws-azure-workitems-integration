@@ -39,15 +39,15 @@ steps:
   condition: and(eq(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa ${variables.areapath}
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa variables.areapath
   condition: and(eq(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa ${variables.areapath}
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa variables.areapath
   condition: and(ne(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa ${variables.areapath}
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa variables.areapath
   condition: and(ne(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation params.config'
 
