@@ -32,7 +32,7 @@ variables:
         value: $(azurearea)    
 
 steps:
-- script: echo ${{variables.areapath}}
+- script: echo $(azureproject)
 
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependecies'
