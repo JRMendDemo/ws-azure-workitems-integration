@@ -26,9 +26,9 @@ variables:
    - name: area
      value: $(azurearea)
    - name: areapath
-     ${{if eq(${{variables.area}},'')}} :
+     ${{if eq(variables.area,'')}} :
         value: $(azureproject)    
-     ${{if ne(${{variables.area}},'')}}:   
+     ${{else}}:   
         value: $(azurearea)    
 
 steps:
