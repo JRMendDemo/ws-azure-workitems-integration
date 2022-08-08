@@ -49,7 +49,8 @@ wsprojects = **List of your Mend product's tokens.**  Separated by a comma
 4. **azurepat** is Personal Access Token for your Azure account.
    1. The instruction for getting PAT is here: https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows  
 5. **azurearea** is Full path of Area section in Work Item.
-   1. Example. The area value could be like this **"SomeProject\SomeArea_1\SomeArea_2"**
+   1. Example. The area value could be like this **"SomeProject\\\SomeArea_1\\\SomeArea_2"**
+      1. Please, pay attention that the **slash needs to be escaped as shown in the example**
    2. If the value is undefined, the default value will be used.
 6. **wsurl** is the URL of the Mend cloud platform. The default value is https://saas.whitesourcesoftware.com
 7. **modificationtypes** is a List of possible issue types which can be used in the sync process  
