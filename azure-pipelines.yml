@@ -27,15 +27,13 @@ variables:
      value: $(azurearea)
    - name: azureprj
      value: $(azureproject)  
-   - name: areapath
-     ${{if eq(variables.area,'')}} :
-        value: $(azureproject)    
-     ${{else}}:   
-        value: $(azurearea)    
 
 steps:
 - bash: echo "##vso[task.setvariable variable=areapath;]${{variables.azureprj}}"
   condition: eq(variables.area,'')
+
+- bash: echo "##vso[task.setvariable variable=areapath;]${{variables.area}}"
+  condition: ne(variables.area,'')
 
 - script: echo $(areapath)
 
