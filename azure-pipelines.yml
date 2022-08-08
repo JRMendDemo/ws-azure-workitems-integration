@@ -32,8 +32,8 @@ variables:
         value: $(azurearea)    
 
 steps:
-- bash: |
-    echo "##vso[task.setvariable variable=areapath;]foo"
+- bash: echo "##vso[task.setvariable variable=areapath;]foo"
+  condition: eq(variables.area,'')
 
 - script: echo $(areapath)
 
