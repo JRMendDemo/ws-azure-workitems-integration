@@ -23,6 +23,13 @@ variables:
      value : $(wsproducts)
    - name : prj
      value : $(wsprojects)
+   - name: area
+     value: $(azurearea)
+   - name: areapath
+     ${{if eq(variables.area,'')}} :
+        value: $(azureproject)    
+     ${{if ne(variables.area,'')}}:   
+        value: $(azurearea)    
 
 steps:
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
@@ -32,15 +39,15 @@ steps:
   condition: and(eq(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa $(azurearea)
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa ${variables.areapath}
   condition: and(eq(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa $(azurearea)
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa ${variables.areapath}
   condition: and(ne(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation params.config'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa $(azurearea)
+- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa ${variables.areapath}
   condition: and(ne(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation params.config'
 
