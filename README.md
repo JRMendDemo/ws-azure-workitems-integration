@@ -4,9 +4,9 @@
 [![Python 3.9](https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Blue_Python_3.7%2B_Shield_Badge.svg/86px-Blue_Python_3.7%2B_Shield_Badge.svg.png)](https://www.python.org/downloads/release/python-370/)
 [![PyPI](https://img.shields.io/pypi/v/ws-cleanup-tool?style=plastic)](https://pypi.org/project/ws-cleanup-tool/)
 
-# Mend Integration for Azure Work Items cloud platform - UNDER MAINTENANCE
-### Tool to proceed with integrations between Mend entities and Azure Work Items 
-* The tool creates and updates Workitems tasks for product\project in **Mend** Organization
+# Mend Integration for Azure Work Items cloud platform
+### Self-hosted tool to proceed with integrations between Mend entities and Azure Work Items 
+* The tool creates and updates Workitems tasks for a product\project in **Mend** Organization
 * Full parameters (Azure variables) list is available below
 * The tool can be configured by Azure DevOps variables
     
