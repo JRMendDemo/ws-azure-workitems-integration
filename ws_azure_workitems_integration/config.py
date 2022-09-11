@@ -29,6 +29,7 @@ class Config:
     wsproducts : str
     wsprojects : str
     azure_area : str
+    azure_type : str
     #initial_sync : bool
     #initial_startdate : str
 
@@ -48,6 +49,7 @@ class Config:
             #"sync_run" : self.sync_run,
             "utc_delta" : self.utc_delta,
             "last_run" : self.last_run,
+            "azure_type" : self.azure_type
         }
         return res
 

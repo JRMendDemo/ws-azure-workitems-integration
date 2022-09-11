@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument('-aa', '--azurearea', help="Azure Area", dest='azure_area', default="")
     parser.add_argument('-wp', '--wsproducts', help="WS Prd", dest='ws_prd', default="")
     parser.add_argument('-wpj', '--wsprojects', help="WS Prj", dest='ws_prj',default="")
+    parser.add_argument('-at', '--azuretype', help="Azure Type (WI or Bug)", dest='azure_type',default="wi")
     arguments = parser.parse_args()
 
     return arguments
@@ -43,6 +44,7 @@ def main():
         config.set(section="DEFAULT", option="modificationtypes", value=mod_type)
         config.set(section="DEFAULT", option="utcdelta", value=args.utc_delta)
         config.set(section="DEFAULT", option="azurearea", value=args.azure_area)
+        config.set(section="DEFAULT", option="azuretype", value=args.azure_type)
         #config.set(section="DEFAULT", option="synctime", value=args.sync_time)
         #config.set(section="DEFAULT", option="syncrun", value=args.sync_run)
         #config.set(section="DEFAULT", option="initialsync", value=args.initial_sync)

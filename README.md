@@ -37,7 +37,8 @@ azurepat = **Your Azure PAT (Personal Access Token)**
 azurearea = **FULL** path of Azure Area  
 modificationtypes = POLICY_MATCH
 utcdelta = 0   
-azureproject = **Name of your Azure project**  
+azureproject = **Name of your Azure project**
+azuretype = **wi or bug**
 wsproducts = **List of your Mend product's tokens.**  Separated by a comma 
 wsprojects = **List of your Mend product's tokens.**  Separated by a comma
 
@@ -59,8 +60,11 @@ wsprojects = **List of your Mend product's tokens.**  Separated by a comma
    2. Please, pay attention that values should be provided **without** spaces as described above
 8. **utcdelta** is a delta between the local time of your **server** and UTC 
    1. For example, the delta between local Israel time and UTS is **-3** hours, but if your Mend's server uses UTC time then the UTC delta should be set to 0  
-9. **wsproducts** is a List of all your product's tokens that should be INCLUDED in the Sync process. List separated by a comma      
-10. **wsprojects** is a List of all your project's tokens that should be INCLUDED in the Sync process. List separated by a comma
+9. **wsproducts** is a List of all your product's tokens that should be INCLUDED in the Sync process. List separated by a comma    
+10. **azuretype** has or **wi** (by default) or **bug** value
+    1. In case **wi** all created Work Items will have type Issue
+    2. In case **bug** all created Work Items will have type Bug
+11. **wsprojects** is a List of all your project's tokens that should be INCLUDED in the Sync process. List separated by a comma
     1. Example
 ```mermaid
 graph TD

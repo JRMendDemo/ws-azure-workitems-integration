@@ -123,7 +123,7 @@ def check_wi_id(id: str):
         credentials = BasicAuthentication('', personal_access_token)
         connection = VssConnection(base_url=url, creds=credentials)
         wiql = Wiql(
-            query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="WS Issue_{id}"'
+            query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="WS Issue_{id}" And [System.TeamProject] = "{conf.azure_project}"'
         )
         wit_client = connection.get_client(
             'vsts.work_item_tracking.v4_1.work_item_tracking_client.WorkItemTrackingClient')
@@ -314,9 +314,11 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                             }
                         )
                     try:
-                        r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task", data=data, project=azure_prj)
+                        r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
                         if errcode == 0:
                             logger.info(f"Work Item {count_item} created")
+                        else:
+                            logger.warning(f"Work Item was not created. Details: {r['message']}")
                     except Exception as err:
                         logger.error(f"Error was proceeded during creation: {err}")
                 else:
@@ -397,6 +399,7 @@ def startup():
             last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
             azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
+            azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "wi"),
             #initial_sync = config['DEFAULT'].getboolean("initialsync", False),
             #initial_startdate = get_conf_value(config['DEFAULT'].get("InitialStartdate"), os.environ.get("Initial_Start")),
             ws_conn=None
