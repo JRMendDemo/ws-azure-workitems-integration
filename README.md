@@ -58,10 +58,10 @@ wsprojects = **List of your Mend product's tokens.**  Separated by a comma
 7. **modificationtypes** is a List of possible issue types which can be used in the sync process  
    1. Possible values are : **INVENTORY,METADATA,SCAN,POLICY_MATCH,SCAN_COMMENT,SOURCE_FILE_MATCH** or **All** for all types 
    2. Please, pay attention that values should be provided **without** spaces as described above
-8. **utcdelta** is a delta between the local time of your **server** and UTC 
-   1. For example, the delta between local Israel time and UTS is **-3** hours, but if your Mend's server uses UTC time then the UTC delta should be set to 0  
+8. **utcdelta** is a delta between the local time of your **computer where you run tool** and **MEND's environment** 
+   1. For example, the delta between local Israel time and saas Mend'd environment is **-3** hours
 9. **wsproducts** is a List of all your product's tokens that should be INCLUDED in the Sync process. List separated by a comma    
-10. **azuretype** has or **wi** (by default) or **bug** value
+10. **azuretype** can accept the following values:  **wi** (by default) or **bug** 
     1. In case **wi** all created Work Items will have type Issue
     2. In case **bug** all created Work Items will have type Bug
 11. **wsprojects** is a List of all your project's tokens that should be INCLUDED in the Sync process. List separated by a comma

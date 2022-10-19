@@ -25,29 +25,6 @@ def main():
     if conf is None:
         conf = startup()
     config = ConfigParser()
-    '''
-    if conf.initial_sync:
-        config.read(conf_file)
-        prepare_json_links()
-        logger.info("Initial sync process is started")
-        init_stdate = "2000-01-01"
-        try:
-            init_stdate = conf.initial_startdate if conf.initial_startdate is not None else init_stdate
-        except:
-            pass
-
-        time_delta = config['DEFAULT'].getint("utcdelta", 0)
-        now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
-        todate = now.strftime("%Y-%m-%d %H:%M:%S")
-
-        logger.info(run_sync(init_stdate,"2099-01-01" , True))
-        logger.info(update_wi_in_thread())
-        logger.info("Initial sync was proceeded successfully")
-        config.set(section="DEFAULT", option="LastRun", value=todate)
-        with open(conf_file, 'w') as configfile:
-            config.write(configfile)
-    else:
-    '''
     if os.path.exists(conf_file):
         logger.info("Sync process is started")
         #sync_run = True
@@ -85,12 +62,12 @@ def prepare_json_links():
     except:
         prd_lst =[]
     prj_lst = []
-    try:
-        f = open("./links.json")
-        res_json = json.load(f)
-        f.close()
-    except:
-        res_json = {}
+    #try:
+    #    f = open("./links.json")
+    #    res_json = json.load(f)
+    #    f.close()
+    #except:
+    res_json = {}
 
     if prd_lst is not None:
         for el_prd in prd_lst:
@@ -98,7 +75,7 @@ def prepare_json_links():
             for prj_one in pr_el[1:]:
                 prj_lst.append(prj_one)
 
-    conf_prj = "" if conf.wsprojects is None else conf.wsprojects
+    conf_prj = "" if conf.wsprojects is None else conf.wsprojects.split(',')
 
     for el_prj in conf_prj:
         rt = WS.call_ws_api(self=conf.ws_conn, request_type="getProjectTags", kv_dict={"projectToken": el_prj})

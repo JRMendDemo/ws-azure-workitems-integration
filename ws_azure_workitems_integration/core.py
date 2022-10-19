@@ -154,25 +154,26 @@ def update_wi_in_thread():
         id_str = id_str[:-1] if len(wiql_results) > 0 else ""
         if id_str != "":
             wi, errcode = run_azure_api(api_type="GET", api=f"wit/workitems?ids={id_str}&$expand=Relations", data={}, project=conf.azure_project,cmd_type="&")
-            for wq_el in wi['value']:
-                issue_id = wq_el['id']
-                issue_wi_title = wq_el['fields']['System.Title']
-                comment = wq_el['relations'][0]['attributes']['comment']
-                prj_token = comment[0:wq_el['relations'][0]['attributes']['comment'].find(",")]
-                uuid = comment[wq_el['relations'][0]['attributes']['comment'].find(",")+1:]
-                wq_el_url = wq_el['url'][0:wq_el['url'].find("apis")] + f"workitems/edit/{issue_id}"
+            if errcode == 0:
+                for wq_el in wi['value']:
+                    issue_id = wq_el['id']
+                    issue_wi_title = wq_el['fields']['System.Title']
+                    comment = wq_el['relations'][0]['attributes']['comment']
+                    prj_token = comment[0:wq_el['relations'][0]['attributes']['comment'].find(",")]
+                    uuid = comment[wq_el['relations'][0]['attributes']['comment'].find(",")+1:]
+                    wq_el_url = wq_el['url'][0:wq_el['url'].find("apis")] + f"workitems/edit/{issue_id}"
 
-                ext_issues = [{"identifier": f"{issue_wi_title}",
-                               "url": wq_el_url,
-                               "status": wq_el["fields"]['System.State'],
-                               "lastModified": wq_el["fields"]['System.ChangedDate'],
-                               "created": wq_el["fields"]['System.CreatedDate']
-                               }]
-                rt = WS.call_ws_api(self=conf.ws_conn, request_type="updateExternalIntegrationIssues",
-                               kv_dict={"projectToken": prj_token, "wsPolicyIssueItemUuid": uuid,
-                                        "externalIssues": ext_issues})
+                    ext_issues = [{"identifier": f"{issue_wi_title}",
+                                   "url": wq_el_url,
+                                   "status": wq_el["fields"]['System.State'],
+                                   "lastModified": wq_el["fields"]['System.ChangedDate'],
+                                   "created": wq_el["fields"]['System.CreatedDate']
+                                   }]
+                    rt = WS.call_ws_api(self=conf.ws_conn, request_type="updateExternalIntegrationIssues",
+                                   kv_dict={"projectToken": prj_token, "wsPolicyIssueItemUuid": uuid,
+                                            "externalIssues": ext_issues})
 
-            return f"Updated {len(wi['value'])} Work Items"
+                return f"Updated {len(wi['value'])} Work Items"
         else:
             return "Nothing to update"
 
