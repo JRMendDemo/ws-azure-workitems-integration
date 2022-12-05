@@ -123,7 +123,8 @@ def check_wi_id(id: str):
         credentials = BasicAuthentication('', personal_access_token)
         connection = VssConnection(base_url=url, creds=credentials)
         wiql = Wiql(
-            query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="WS Issue_{id}" And [System.TeamProject] = "{conf.azure_project}"'
+            #query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="WS Issue_{id}" And [System.TeamProject] = "{conf.azure_project}"'
+            query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="{id}" And [System.TeamProject] = "{conf.azure_project}"'
         )
         wit_client = connection.get_client(
             'vsts.work_item_tracking.v4_1.work_item_tracking_client.WorkItemTrackingClient')
@@ -280,13 +281,15 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                 except:
                     vul_desc = ""
 
-                exist_id = check_wi_id(f"{lib_id}_{str(i + 1)}")
+                exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
+                #exist_id = check_wi_id(f"{lib_id}_{str(i + 1)}")
                 if exist_id == 0:
                     data = [
                         {
                             "op": "add",
                             "path": "/fields/System.Title",
-                            "value": f"WS Issue_{lib_id}_{str(i + 1)}"
+                            "value": f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}"
+                            #"value": f"WS Issue_{lib_id}_{str(i + 1)}"
                         },
                         {
                             "op": "add",
@@ -394,15 +397,10 @@ def startup():
             azure_project=get_conf_value(config['links'].get("azureproject"), os.environ.get("AZURE_PROJECT")),
             modification_types=get_conf_value(config['DEFAULT'].get('modificationTypes'),
                                               os.environ.get("modification_Types")),
-            #dry_run=config['DEFAULT'].getboolean("DryRun", False),
-            #sync_run=config['DEFAULT'].getboolean("SyncRun", False),
-            #sync_time=config['DEFAULT'].getint("SyncTime", 10),
             last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
             azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
             azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "wi"),
-            #initial_sync = config['DEFAULT'].getboolean("initialsync", False),
-            #initial_startdate = get_conf_value(config['DEFAULT'].get("InitialStartdate"), os.environ.get("Initial_Start")),
             ws_conn=None
         )
         try:
