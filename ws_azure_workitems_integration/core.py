@@ -255,41 +255,55 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
 
         count_item = 1
         for prj_el in ws_prj[2:]:
-            lib_id = prj_el['library']['keyId']
+            lib_id = prj_el["library"]["keyId"]
             # lib_uuid= prj_el['library']['keyUuid']
-            lib_url = prj_el['library']['url']
-            lib_name = prj_el['library']['filename']
-            lib_ver = prj_el['library']['version']
-            for i, policy_el in enumerate(prj_el['policyViolations']):
-                issue_id = policy_el['issueUuid']
-                viol_type = policy_el['violationType']
-                viol_status = policy_el['status']
+            lib_url = prj_el["library"]["url"]
+            lib_name = prj_el["library"]["filename"]
+            lib_ver = prj_el["library"]["version"]
+            for i, policy_el in enumerate(prj_el["policyViolations"]):
+                issue_id = policy_el["issueUuid"]
+                viol_type = policy_el["violationType"]
+                viol_status = policy_el["status"]
                 try:
-                    vul_name = policy_el["vulnerability"]['name']
+                    vul_name = policy_el["vulnerability"]["name"]
                 except:
                     vul_name = ""
                 try:
-                    vul_severity = policy_el['vulnerability']['cvss3_severity']
+                    vul_severity = policy_el["vulnerability"]["cvss3_severity"]
                 except:
                     vul_severity = ""
                 try:
-                    vul_score = policy_el['vulnerability']['cvss3_score']
+                    vul_score = policy_el["vulnerability"]["cvss3_score"]
                 except:
                     vul_score = ""
                 try:
-                    vul_desc = policy_el['vulnerability']['description']
+                    vul_desc = policy_el["vulnerability"]["description"]
                 except:
                     vul_desc = ""
 
-                exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
+                exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}") if vul_severity == "" \
+                    else check_wi_id(f"{prj_name[0:20]}_{vul_severity}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
                 #exist_id = check_wi_id(f"{lib_id}_{str(i + 1)}")
                 if exist_id == 0:
+                    if float(vul_score) < 4:
+                        priority = 4
+                    elif 4 <= float(vul_score) < 5.5:
+                        priority = 3
+                    elif 5.5 <= float(vul_score) < 7:
+                        priority = 2
+                    else:
+                        priority = 1
                     data = [
                         {
                             "op": "add",
                             "path": "/fields/System.Title",
-                            "value": f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}"
+                            "value": f"{prj_name[0:20]}_{lib_name if vul_severity == '' else vul_severity+'_'+lib_name}_v.{lib_ver}_#{str(i + 1)}"
                             #"value": f"WS Issue_{lib_id}_{str(i + 1)}"
+                        },
+                        {
+                            "op" : "add",
+                            "path" : "/fields/Microsoft.VSTS.Common.Priority",
+                            "value" : priority
                         },
                         {
                             "op": "add",
