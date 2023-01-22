@@ -7,7 +7,7 @@ sys.path.append(file_dir)
 
 from ws_sdk import WS
 
-conf_file = "./params.config"
+conf_file = "./local-params.config" if os.path.exists("./local-params.config") else "./params.config"
 #__tool_name__ = "WI plugin"
 
 @dataclass
@@ -20,7 +20,6 @@ class Config:
     azure_project: str
     azure_pat: str
     modification_types: list
-    #dry_run: bool
     ws_conn: WS
     #sync_time : int
     utc_delta : int
@@ -30,8 +29,6 @@ class Config:
     wsprojects : str
     azure_area : str
     azure_type : str
-    #initial_sync : bool
-    #initial_startdate : str
 
     def conf_json(self):
         res = {
@@ -44,9 +41,6 @@ class Config:
             "azure_pat" : self.azure_pat,
             "azure_area" : self.azure_area,
             "modification_types" : self.modification_types,
-            #"dry_run" : self.dry_run,
-            #"sync_time" : self.sync_time,
-            #"sync_run" : self.sync_run,
             "utc_delta" : self.utc_delta,
             "last_run" : self.last_run,
             "azure_type" : self.azure_type

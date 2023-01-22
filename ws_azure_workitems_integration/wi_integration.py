@@ -62,11 +62,6 @@ def prepare_json_links():
     except:
         prd_lst =[]
     prj_lst = []
-    #try:
-    #    f = open("./links.json")
-    #    res_json = json.load(f)
-    #    f.close()
-    #except:
     res_json = {}
 
     if prd_lst is not None:

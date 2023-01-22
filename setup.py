@@ -14,7 +14,7 @@ setup(
     ]},
   packages=find_packages(),
   version= __version__,
-  author="WhiteSource Professional Services",
+  author="Mend Professional Services",
   author_email="ps@whitesourcesoftware.com",
   description=__description__,
   license='LICENSE.txt',

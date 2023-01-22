@@ -86,19 +86,14 @@ def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", projec
         startup()
     try:
         personal_access_token = conf.azure_pat
-        if project == "":
-            url = conf.azure_url + conf.azure_org + '/_apis/' + api + f'{cmd_type}api-version=' + version
-        else:
-            url = conf.azure_url + conf.azure_org + f'/{project}/_apis/' + api + f'{cmd_type}api-version=' + version
+        url = f"{conf.azure_url}{conf.azure_org}/_apis/{api}{cmd_type}api-version={version}" if project == "" else f"{conf.azure_url}{conf.azure_org}/{project}/_apis/{api}{cmd_type}api-version={version}"
 
-        if api_type == "GET":
-            r = requests.get(url, json=data,
-                             headers={'Content-Type': 'application/json-patch+json'},
-                             auth=('', personal_access_token))
-        else:
-            r = requests.post(url, json=data,
-                              headers={'Content-Type': 'application/json-patch+json'},
-                              auth=('', personal_access_token))
+        r = requests.get(url, json=data,
+                         headers={'Content-Type': 'application/json-patch+json'},
+                         auth=('', personal_access_token)) if api_type == "GET" else \
+            requests.post(url, json=data,
+                          headers={'Content-Type': 'application/json-patch+json'},
+                          auth=('', personal_access_token))
         res = json.loads(r.text)
         try:
             msg = res['message']
@@ -143,7 +138,7 @@ def update_wi_in_thread():
         credentials = BasicAuthentication('', personal_access_token)
         connection = VssConnection(base_url=url, creds=credentials)
         wiql = Wiql(
-            query=f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{conf.last_run}"'
+            query=f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{conf.last_run}" And [System.TeamProject] = "{conf.azure_project}"'
         )
         wit_client = connection.get_client(
             'vsts.work_item_tracking.v4_1.work_item_tracking_client.WorkItemTrackingClient')
@@ -174,7 +169,7 @@ def update_wi_in_thread():
                                    kv_dict={"projectToken": prj_token, "wsPolicyIssueItemUuid": uuid,
                                             "externalIssues": ext_issues})
 
-                return f"Updated {len(wi['value'])} Work Items"
+                return f"Updated {len(wi['value'])} {'Work Item' if conf.azure_type == 'wi' else 'Bug'}s"
         else:
             return "Nothing to update"
 
@@ -246,7 +241,7 @@ def update_ws_issue(issueid: str, prj_token: str, exist_id: int):
         logger.error(f"Internal error was proceeded. Details : {err}")
 
 
-def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
+def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : list):
     global conf
     try:
         ws_prj = fetch_prj_policy(prj_token, sdate, edate)
@@ -334,16 +329,17 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str):
                     try:
                         r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
                         if errcode == 0:
-                            logger.info(f"Work Item {count_item} created")
+                            logger.info(f"{'Work Item' if conf.azure_type == 'wi' else 'Bug'} {count_item} of Mend project {prj_name} created")
                         else:
-                            logger.warning(f"Work Item was not created. Details: {r['message']}")
+                            logger.warning(f"{'Work Item' if conf.azure_type == 'wi' else 'Bug'} was not created. Details: {r['message']}")
                     except Exception as err:
                         logger.error(f"Error was proceeded during creation: {err}")
+                    count_item += 1
                 else:
-                    update_ws_issue(issue_id, prj_token, exist_id)
-                count_item += 1
+                    if exist_id not in del_:
+                        update_ws_issue(issue_id, prj_token, exist_id)
         if errcode == 0:
-            return f"{count_item-1} Work Items were created or updated successfully"
+            return f"{count_item-1} {'Work Item' if conf.azure_type == 'wi' else 'Bug'}s were created or updated successfully"
     except Exception as err:
         return f"Internal error was proceeded. Details : {err}"
 
@@ -373,14 +369,23 @@ def run_sync(st_date: str, end_date: str, in_script : bool = False):
                     b = key_el
         if fnd:
             res.append((a, b))
-
+    deleted_items = get_deleted_items()
     for prj_el in res:
-        create_wi(prj_el[0], prj_el[1], st_date, end_date)
+        create_wi(prj_el[0], prj_el[1], st_date, end_date, deleted_items)
 
     if len(res) > 0:
         return f"Proceed {len(res)} project(s)"
     else:
         return "Nothing to create now"
+
+
+def get_deleted_items():
+    del_lst = []
+    r, errcode = run_azure_api(api_type="GET", api=f"wit/recyclebin", data={}, project=conf.azure_project)
+    if errcode == 0:
+        for res_ in r["value"]:
+            del_lst.append(res_["id"])
+    return del_lst
 
 
 def get_keys_by_value(dictOfElements, valueToFind):
@@ -393,6 +398,12 @@ def get_keys_by_value(dictOfElements, valueToFind):
     return res
 
 
+def extract_url(url : str)-> str:
+    url_ = url if "https://" in url else f"https://{url}"
+    pos = url_.find("/",8)
+    return url_[0:pos] if pos>-1 else url_
+
+
 def startup():
     global conf
     if os.path.exists(conf_file):
@@ -400,11 +411,11 @@ def startup():
         config.read(conf_file)
 
         conf = Config(
-            ws_user_key=get_conf_value(config['DEFAULT'].get("WsUserKey"), os.environ.get("WS_USER_KEY")),
-            ws_org_token=get_conf_value(config['DEFAULT'].get("WsOrgToken"), os.environ.get("WS_ORG_TOKEN")),
+            ws_user_key=get_conf_value(config['DEFAULT'].get("WsUserKey"), os.environ.get("WS_USERKEY")),
+            ws_org_token=get_conf_value(config['DEFAULT'].get("Apikey"), os.environ.get("WS_TOKEN")),
             ws_url=get_conf_value(config['DEFAULT'].get("WsUrl"), os.environ.get("WS_URL")),
-            wsproducts=get_conf_value(config['links'].get("wsproducts"), os.environ.get("WS_PRODUCTS")),
-            wsprojects=get_conf_value(config['links'].get("wsprojects"), os.environ.get("WS_PROJECTS")),
+            wsproducts=get_conf_value(config['links'].get("wsproducttoken"), os.environ.get("WS_PRODUCTTOKEN")),
+            wsprojects=get_conf_value(config['links'].get("wsprojecttoken"), os.environ.get("WS_PROJECTTOKEN")),
             azure_url=get_conf_value(config['DEFAULT'].get('AzureUrl'), os.environ.get("AZURE_URL")),
             azure_org=get_conf_value(config['DEFAULT'].get('AzureOrg'), os.environ.get("AZURE_ORG")),
             azure_pat=get_conf_value(config['DEFAULT'].get('AzurePat'), os.environ.get("AZURE_PAT")),
@@ -418,7 +429,7 @@ def startup():
             ws_conn=None
         )
         try:
-            conf.ws_conn = WS(url=conf.ws_url,
+            conf.ws_conn = WS(url=extract_url(conf.ws_url),
                               user_key=conf.ws_user_key,
                               token=conf.ws_org_token,
                               skip_ua_download=True,

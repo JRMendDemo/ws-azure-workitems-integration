@@ -31,30 +31,30 @@ variables:
 steps:
 - bash: echo "##vso[task.setvariable variable=areapath;]${{variables.azureprj}}"
   condition: eq(variables.area,'')
-  displayName: 'Environment variables preparation'
+  displayName: 'Environment variables preparation #1'
 
 - bash: echo "##vso[task.setvariable variable=areapath;]${{variables.area}}"
   condition: ne(variables.area,'')
-  displayName: 'Environment variables preparation'
+  displayName: 'Environment variables preparation #2'
 
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
-  displayName: 'Install dependecies'
+  displayName: 'Install dependencies'
 
 - script: echo 'Need to define Product or Project'
   condition: and(eq(variables.prd,''), eq(variables.prj,''))
-  displayName: 'Preparation params.config'
+  displayName: 'Preparation config file'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wpj $(wsprojects) -aa $(areapath) -at $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --mendurl $(mendurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsprojecttoken $(wsprojects) --azurearea $(areapath) --azuretype $(azuretype)
   condition: and(eq(variables.prd,''), ne(variables.prj,''))
-  displayName: 'Preparation params.config'
+  displayName: 'Preparation config file'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -aa $(areapath) -at $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --mendurl $(mendurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducts) --azurearea $(areapath) --azuretype $(azuretype)
   condition: and(ne(variables.prd,''), eq(variables.prj,''))
-  displayName: 'Preparation params.config'
+  displayName: 'Preparation config file'
 
-- script: python update_param.py -u $(wsuserkey) -o $(wsorgtoken) -l $(wsurl) -a $(azureurl) -ao $(azureorg) -ap $(azurepat) -m $(modificationtypes) -utc $(utcdelta) -apj $(azureproject) -wp $(wsproducts) -wpj $(wsprojects) -aa $(areapath) -at $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --mendurl $(mendurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducts) --wsprojecttoken $(wsprojects) --azurearea $(areapath) --azuretype $(azuretype)
   condition: and(ne(variables.prd,''), ne(variables.prj,''))
-  displayName: 'Preparation params.config'
+  displayName: 'Preparation config file'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
