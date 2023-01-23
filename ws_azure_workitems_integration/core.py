@@ -428,6 +428,8 @@ def startup():
             azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "wi"),
             ws_conn=None
         )
+        conf.last_run = "2022-01-01 00:00:01" if not conf.last_run else conf.last_run
+
         try:
             conf.ws_conn = WS(url=extract_url(conf.ws_url),
                               user_key=conf.ws_user_key,
