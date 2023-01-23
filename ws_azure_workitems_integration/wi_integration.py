@@ -34,7 +34,7 @@ def main():
         last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
         #sync_time = config['DEFAULT'].getint("SyncTime", 10)
         #sync_run =  config['DEFAULT'].getboolean("SyncRun", False)
-        #if sync_run:
+        last_run = "2022-01-01 00:00:01" if not last_run else last_run
         time_delta = config['DEFAULT'].getint("utcdelta",0)
         now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
         todate = now.strftime("%Y-%m-%d %H:%M:%S")
