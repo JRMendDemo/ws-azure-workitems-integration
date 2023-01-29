@@ -8,7 +8,7 @@ sys.path.append(file_dir)
 from ws_sdk import WS
 
 conf_file = "./local-params.config" if os.path.exists("./local-params.config") else "./params.config"
-#__tool_name__ = "WI plugin"
+wi_types = "./workitems_type.json"
 
 @dataclass
 class Config:
@@ -21,9 +21,7 @@ class Config:
     azure_pat: str
     modification_types: list
     ws_conn: WS
-    #sync_time : int
     utc_delta : int
-    #sync_run : bool
     last_run : str
     wsproducts : str
     wsprojects : str

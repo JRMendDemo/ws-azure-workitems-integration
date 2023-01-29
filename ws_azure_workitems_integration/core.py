@@ -3,14 +3,9 @@ import os
 import logging
 import sys
 
-from msrest.authentication import BasicAuthentication
-from vsts.vss_connection import VssConnection
-
-
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 
-from vsts.work_item_tracking.v4_1.models.wiql import Wiql
 import requests
 from configparser import ConfigParser
 from _version import __tool_name__, __version__
@@ -34,6 +29,13 @@ logger_wssdk.setLevel(logging.INFO)
 conf = None
 
 
+def try_or_error(supplier, msg):
+    try:
+        return supplier()
+    except:
+        return msg
+
+
 def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
     global conf
     if conf is None:
@@ -43,14 +45,7 @@ def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
                             kv_dict={"projectToken": prj_token, "policyActionType": "CREATE_ISSUE", "fromDateTime" : sdate, "toDateTime" : edate})
         rt_res = [rt['product']['productName'], rt['project']['projectName']]
         for rt_el_val in rt['issues']:
-            try:
-                enb = rt_el_val['policy']['enabled']
-            except:
-                enb = False
-
-            #if (rt_el_val['policyViolations'][0]['lastModified'] >= sdate) and (
-            #        rt_el_val['policyViolations'][0]['lastModified'] <= edate) and enb:
-            if enb:
+            if try_or_error(lambda :rt_el_val['policy']['enabled'],False):
                 rt_res.append(rt_el_val)
     except Exception as err:
         rt_res = ["Internal error", f"{err}"]
@@ -79,21 +74,20 @@ def get_prj_list_modified(fromdate: str, todate: str):
         exit(-1)
 
 
-def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", project: str = "", cmd_type: str ="?"):
+def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", project: str = "", cmd_type: str ="?", header: str = "application/json-patch+json"):
     global conf
     errorcode = 0
     if conf is None:
         startup()
     try:
-        personal_access_token = conf.azure_pat
         url = f"{conf.azure_url}{conf.azure_org}/_apis/{api}{cmd_type}api-version={version}" if project == "" else f"{conf.azure_url}{conf.azure_org}/{project}/_apis/{api}{cmd_type}api-version={version}"
 
         r = requests.get(url, json=data,
-                         headers={'Content-Type': 'application/json-patch+json'},
-                         auth=('', personal_access_token)) if api_type == "GET" else \
+                         headers={'Content-Type': f'{header}'},
+                         auth=('', conf.azure_pat)) if api_type == "GET" else \
             requests.post(url, json=data,
-                          headers={'Content-Type': 'application/json-patch+json'},
-                          auth=('', personal_access_token))
+                          headers={'Content-Type': f'{header}'},
+                          auth=('', conf.azure_pat))
         res = json.loads(r.text)
         try:
             msg = res['message']
@@ -113,18 +107,9 @@ def check_wi_id(id: str):
     if conf is None:
         startup()
     try:
-        personal_access_token = conf.azure_pat
-        url = conf.azure_url + conf.azure_org
-        credentials = BasicAuthentication('', personal_access_token)
-        connection = VssConnection(base_url=url, creds=credentials)
-        wiql = Wiql(
-            #query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="WS Issue_{id}" And [System.TeamProject] = "{conf.azure_project}"'
-            query=f'select [System.Id],[System.State] From WorkItems Where [System.Title]="{id}" And [System.TeamProject] = "{conf.azure_project}"'
-        )
-        wit_client = connection.get_client(
-            'vsts.work_item_tracking.v4_1.work_item_tracking_client.WorkItemTrackingClient')
-        wiql_results = wit_client.query_by_wiql(wiql).work_items
-        return wiql_results[0].id
+        data = {"query" : f'select [System.Id],[System.State] From WorkItems Where [System.Title]="{id}" And [System.TeamProject] = "{conf.azure_project}" '}
+        r, errocode = run_azure_api(api_type="POST",api="wit/wiql", version="7.0", project=conf.azure_project,data=data, header="application/json")
+        return r["workItems"][0]["id"]
     except:
         return 0
 
@@ -133,21 +118,15 @@ def update_wi_in_thread():
     global conf
     startup()
     try:
-        personal_access_token = conf.azure_pat
-        url = conf.azure_url + conf.azure_org
-        credentials = BasicAuthentication('', personal_access_token)
-        connection = VssConnection(base_url=url, creds=credentials)
-        wiql = Wiql(
-            query=f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{conf.last_run}" And [System.TeamProject] = "{conf.azure_project}"'
-        )
-        wit_client = connection.get_client(
-            'vsts.work_item_tracking.v4_1.work_item_tracking_client.WorkItemTrackingClient')
-        wiql_results = wit_client.query_by_wiql(wiql=wiql, time_precision=True).work_items
-        id_str = ""
-        for wq_el in wiql_results:
-            id_str += str(wq_el.id)+","
+        data = {"query" : f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{conf.last_run}" And [System.TeamProject] = "{conf.azure_project}"'}
+        r, errocode = run_azure_api(api_type="POST",api="wit/wiql", version="7.0", project=conf.azure_project,data=data, header="application/json",cmd_type="?timePrecision=True&")
 
-        id_str = id_str[:-1] if len(wiql_results) > 0 else ""
+        id_str = ""
+        if errocode == 0:
+            for wi_ in r["workItems"]:
+                id_str += str(wi_["id"]) + ","
+            id_str = id_str[:-1] if len(r["workItems"]) > 0 else ""
+
         if id_str != "":
             wi, errcode = run_azure_api(api_type="GET", api=f"wit/workitems?ids={id_str}&$expand=Relations", data={}, project=conf.azure_project,cmd_type="&")
             if errcode == 0:
@@ -241,7 +220,36 @@ def update_ws_issue(issueid: str, prj_token: str, exist_id: int):
         logger.error(f"Internal error was proceeded. Details : {err}")
 
 
-def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : list):
+def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : list, cstm_flds : list, wi_type : str):
+    def set_priority(value : float):
+        score= [70,55,40]  # Mend gradation of SCC scores
+        z = value*10
+        for i, sc_ in enumerate(score):
+            if z//sc_ == 1:
+                break
+        return i+1
+
+    def analyze_fields(fld : dict, prj : list):
+        val = ""
+        if fld["defaultValue"]:
+            step1 = fld["defaultValue"].split("&")
+            for st_ in step1:
+                val += f"{mend_val(st_[5:], prj)} " if "mend:" in st_ else f"{st_} "
+        return fld["referenceName"], val.strip()
+
+    def azure_field_name(custom_name : str):
+        return "Custom."+custom_name.replace(" ", "")
+
+    def mend_val(alert_val : str, prj_el : list):
+        lst = alert_val.split(".")
+        temp = None
+        for lst_ in lst:
+            try:
+                temp = prj_el[lst_] if not temp else temp[lst_]
+            except:
+                return ""
+        return temp
+
     global conf
     try:
         ws_prj = fetch_prj_policy(prj_token, sdate, edate)
@@ -255,45 +263,42 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
             lib_url = prj_el["library"]["url"]
             lib_name = prj_el["library"]["filename"]
             lib_ver = prj_el["library"]["version"]
+            lib_local_path = ""
+            for loc_path_ in prj_el["library"]["localPaths"]:
+                lib_local_path += try_or_error(lambda: loc_path_,"")+"<br>"
             for i, policy_el in enumerate(prj_el["policyViolations"]):
                 issue_id = policy_el["issueUuid"]
                 viol_type = policy_el["violationType"]
                 viol_status = policy_el["status"]
-                try:
-                    vul_name = policy_el["vulnerability"]["name"]
-                except:
-                    vul_name = ""
-                try:
-                    vul_severity = policy_el["vulnerability"]["cvss3_severity"]
-                except:
-                    vul_severity = ""
-                try:
-                    vul_score = policy_el["vulnerability"]["cvss3_score"]
-                except:
-                    vul_score = ""
-                try:
-                    vul_desc = policy_el["vulnerability"]["description"]
-                except:
-                    vul_desc = ""
+                vul_name = try_or_error(lambda:policy_el["vulnerability"]["name"],"")
+                vul_severity = try_or_error(lambda:policy_el["vulnerability"]["cvss3_severity"],"")
+                vul_title = f"{vul_name} ({vul_severity}) detected in {lib_name}"
 
-                exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}") if vul_severity == "" \
-                    else check_wi_id(f"{prj_name[0:20]}_{vul_severity}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
-                #exist_id = check_wi_id(f"{lib_id}_{str(i + 1)}")
+                vul_score = try_or_error(lambda:policy_el["vulnerability"]["cvss3_score"],"")
+                vul_desc = try_or_error(lambda:policy_el["vulnerability"]["description"],"")
+                vul_url = try_or_error(lambda:policy_el["vulnerability"]["url"],"")
+                vul_origin_url = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["url"],"")
+                vul_publish_date = try_or_error(lambda:policy_el["vulnerability"]["publishDate"],"")
+                vul_fix_resolution = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["fixResolution"],"")
+                vul_fix_type = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["type"],"")
+                vul_fix_release_date = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["date"],"")
+
+                #exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}") if vul_severity == "" \
+                #    else check_wi_id(f"{prj_name[0:20]}_{vul_severity}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
+                exist_id = check_wi_id(vul_title)
                 if exist_id == 0:
-                    if float(vul_score) < 4:
-                        priority = 4
-                    elif 4 <= float(vul_score) < 5.5:
-                        priority = 3
-                    elif 5.5 <= float(vul_score) < 7:
-                        priority = 2
-                    else:
-                        priority = 1
+                    priority = set_priority(float(vul_score))
+                    desc = "<b>Vulnerable Library: </b>" + lib_name + "<br><b> Library home page:</b> " + lib_local_path + \
+                           "<br><b>Vulnerability Details:</b> " + vul_desc + "<br><b>Publish Date:</b> " + vul_publish_date + \
+                           f"<br><b>URL:</b> <a href='{vul_url}'>{vul_name}</a>" + \
+                           "<br><b>CVSS 3 Score Details </b>(" + str(vul_score) + ")<br>Suggested Fix:<br><b>Type:</b> " + vul_fix_type + \
+                           f"<br><b>Origin:</b> <a href='{vul_origin_url}'></a><br><b>Release Date:</b> " + vul_fix_release_date + \
+                           "<br><b>Fix Resolution:</b> " + vul_fix_resolution
                     data = [
                         {
                             "op": "add",
                             "path": "/fields/System.Title",
-                            "value": f"{prj_name[0:20]}_{lib_name if vul_severity == '' else vul_severity+'_'+lib_name}_v.{lib_ver}_#{str(i + 1)}"
-                            #"value": f"WS Issue_{lib_id}_{str(i + 1)}"
+                            "value" : vul_title
                         },
                         {
                             "op" : "add",
@@ -303,10 +308,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                         {
                             "op": "add",
                             "path": "/fields/System.Description",
-                            "value": "<b>Product: </b>" + prd_name + "<br>" + "<b>Project: </b>" + prj_name + "<br>" + "<b>Library: </b>" + lib_name + "<br><b> Library version:</b> " + str(
-                                lib_ver) + "<br><b>Violation Type: </b>" + viol_type +
-                                     "<br><b>Violation Status: </b>" + viol_status + "<br><b>Vulnerability: </b>" + vul_name + "<br><b>Severity: </b>" + vul_severity + "<br><b>Score: </b>" + str(
-                                vul_score) + "<br><b>Description:</b> " + vul_desc
+                            "value": desc
                         },
                         {
                             "op": "add",
@@ -318,6 +320,21 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                             }
                         }
                     ]
+                    for custom_ in cstm_flds:
+                        fld_name, fld_val = analyze_fields(custom_, prj_el)
+                        if fld_val:
+                            data.append({
+                                "op" : "add",
+                                "path" : f"/fields/{fld_name}", #azure_field_name(custom_[0])
+                                "value" : fld_val
+                            })
+                        '''
+                        data.append({
+                            "op" : "add",
+                            "path" : f"/fields/{azure_field_name(custom_[0])}",
+                            "value" : mend_val(custom_[1],prj_el)
+                        })
+                        '''
                     if not (conf.azure_area is None or conf.azure_area == ""):
                         data.append(
                             {
@@ -327,7 +344,8 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                             }
                         )
                     try:
-                        r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
+                        #r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
+                        r, errcode = run_azure_api(api_type="POST", api=f"wit/workitems/${wi_type}", data=data, project=azure_prj)
                         if errcode == 0:
                             logger.info(f"{'Work Item' if conf.azure_type == 'wi' else 'Bug'} {count_item} of Mend project {prj_name} created")
                         else:
@@ -344,7 +362,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
         return f"Internal error was proceeded. Details : {err}"
 
 
-def run_sync(st_date: str, end_date: str, in_script : bool = False):
+def run_sync(st_date: str, end_date: str, custom_flds : list, wi_type : str, in_script : bool = False):
     try:
         f = open("./links.json")
         sync_data = json.load(f)
@@ -371,7 +389,7 @@ def run_sync(st_date: str, end_date: str, in_script : bool = False):
             res.append((a, b))
     deleted_items = get_deleted_items()
     for prj_el in res:
-        create_wi(prj_el[0], prj_el[1], st_date, end_date, deleted_items)
+        create_wi(prj_el[0], prj_el[1], st_date, end_date, deleted_items, custom_flds, wi_type)
 
     if len(res) > 0:
         return f"Proceed {len(res)} project(s)"
@@ -425,7 +443,7 @@ def startup():
             last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
             azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
-            azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "wi"),
+            azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "Task"),
             ws_conn=None
         )
         conf.last_run = "2022-01-01 00:00:01" if not conf.last_run else conf.last_run
