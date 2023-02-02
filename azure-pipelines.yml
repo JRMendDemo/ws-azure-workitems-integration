@@ -20,9 +20,9 @@ pool:
 
 variables:
    - name : prd
-     value : $(wsproducts)
+     value : $(wsproducttoken)
    - name : prj
-     value : $(wsprojects)
+     value : $(wsprojecttoken)
    - name: area
      value: $(azurearea)
    - name: azureprj
