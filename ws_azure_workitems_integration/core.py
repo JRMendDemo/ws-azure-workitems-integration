@@ -8,8 +8,8 @@ sys.path.append(file_dir)
 
 import requests
 from configparser import ConfigParser
-from ws_azure_workitems_integration._version import __tool_name__, __version__
-from ws_azure_workitems_integration.config import *
+from _version import __tool_name__, __version__
+from config import *
 from ws_sdk import WS
 
 logging.basicConfig(level=logging.DEBUG if bool(os.environ.get("DEBUG", "false")) is True else logging.INFO,

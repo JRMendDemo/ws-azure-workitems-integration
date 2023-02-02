@@ -2,7 +2,7 @@ import os
 from configparser import ConfigParser
 import argparse
 import json
-from ws_azure_workitems_integration.core import run_azure_api
+import requests
 
 conf_file = "./local-params.config" if os.path.exists("./local-params.config") else "./params.config"
 wi_types = "./local-workitem_types.json" if os.path.exists("./local-workitem_types.json") else "./workitem_types.json"
@@ -67,6 +67,29 @@ def create_wi_json(file : str, args):
                 res = key_val[1]
                 break
         return res
+
+    def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", project: str = "", cmd_type: str = "?",
+                      header: str = "application/json-patch+json"):
+        errorcode = 0
+        try:
+            url = f"{args.azure_url}{args.azure_org}/_apis/{api}{cmd_type}api-version={version}" if project == "" else f"{args.azure_url}{args.azure_org}/{project}/_apis/{api}{cmd_type}api-version={version}"
+
+            r = requests.get(url, json=data,
+                             headers={'Content-Type': f'{header}'},
+                             auth=('', args.azure_pat)) if api_type == "GET" else \
+                requests.post(url, json=data,
+                              headers={'Content-Type': f'{header}'},
+                              auth=('', args.azure_pat))
+            res = json.loads(r.text)
+            try:
+                errorcode = 1
+            except:
+                pass
+        except Exception as err:
+            errorcode = 1
+            res = {"Internal error": f"{err}"}
+
+        return res, errorcode
 
     r, errcode = run_azure_api(api_type="GET", api="wit/workitemtypes/", project=args.azure_prj, data={},
                                version="7.0")
