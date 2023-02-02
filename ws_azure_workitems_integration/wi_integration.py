@@ -31,7 +31,7 @@ def main():
         logger.info("Sync process is started")
         prepare_json_links()
         config.read(conf_file)
-        custom_fields = list(set(config.items('Custom'))-set(config.items('DEFAULT')))
+        #custom_fields = list(set(config.items('Custom'))-set(config.items('DEFAULT')))
         last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
         if not os.path.exists(wi_types):
             create_wi_json(wi_types)
@@ -98,7 +98,7 @@ def create_wi_json(file : str):
 def prepare_json_links():
     global conf
     try:
-        prd_lst = conf.wsproducts.split(',')
+        prd_lst = conf.wsproducttoken.split(',')
     except:
         prd_lst =[]
     prj_lst = []
@@ -110,7 +110,7 @@ def prepare_json_links():
             for prj_one in pr_el[1:]:
                 prj_lst.append(prj_one)
 
-    conf_prj = "" if conf.wsprojects is None else conf.wsprojects.split(',')
+    conf_prj = "" if conf.wsprojecttoken is None else conf.wsprojecttoken.split(',')
 
     for el_prj in conf_prj:
         rt = WS.call_ws_api(self=conf.ws_conn, request_type="getProjectTags", kv_dict={"projectToken": el_prj})

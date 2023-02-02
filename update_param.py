@@ -1,8 +1,11 @@
 import os
 from configparser import ConfigParser
 import argparse
+import json
+from ws_azure_workitems_integration.core import run_azure_api
 
 conf_file = "./local-params.config" if os.path.exists("./local-params.config") else "./params.config"
+wi_types = "./local-workitem_types.json" if os.path.exists("./local-workitem_types.json") else "./workitem_types.json"
 
 
 def parse_args():
@@ -19,7 +22,8 @@ def parse_args():
     parser.add_argument('-aa', '--azurearea', help="Azure Area", dest='azure_area', default="")
     parser.add_argument('-wp', '--wsproducttoken', help="WS Prd", dest='ws_prd', default="")
     parser.add_argument('-wpj', '--wsprojecttoken', help="WS Prj", dest='ws_prj',default="")
-    parser.add_argument('-at', '--azuretype', help="Azure Type (WI or Bug)", dest='azure_type',default="wi")
+    parser.add_argument('-at', '--azuretype', help="Azure Type", dest='azure_type',default="Task")
+    parser.add_argument('-cf', '--customfields', help="Custom Fields", dest='azure_custom',default="")
     arguments = parser.parse_args()
 
     return arguments
@@ -43,13 +47,51 @@ def main():
         config.set(section="DEFAULT", option="azuretype", value=args.azure_type)
 
         config.set(section="links", option="azureproject", value=args.azure_prj)
-        config.set(section="links", option="wsproducts", value=args.ws_prd)
-        config.set(section="links", option="wsprojects", value=args.ws_prj)
+        config.set(section="links", option="wsproducttoken", value=args.ws_prd)
+        config.set(section="links", option="wsprojecttoken", value=args.ws_prj)
 
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
     else:
-        print("Configuration file (local-params.config) not found")
+        print(f"Configuration file ({conf_file}) not found")
+    create_wi_json(wi_types,args)
+
+
+def create_wi_json(file : str, args):
+    def get_defval_from_custom(field_name : str):
+        cstm_flds = args.azure_custom.split(";")
+        res = ""
+        for cstm_ in cstm_flds:
+            key_val = cstm_.split("::")
+            if key_val[0] == field_name:
+                res = key_val[1]
+                break
+        return res
+
+    r, errcode = run_azure_api(api_type="GET", api="wit/workitemtypes/", project=args.azure_prj, data={},
+                               version="7.0")
+    res_conf = []
+    for el_ in r["value"]:
+        fields = []
+        for el_fld_ in el_["fields"]:
+            if "Custom." in el_fld_["referenceName"] or el_fld_["alwaysRequired"]:
+                def_val = get_defval_from_custom(el_fld_["referenceName"][7:]) if "Custom." in el_fld_["referenceName"] else el_fld_["defaultValue"]
+                fields.append(
+                    {"referenceName": el_fld_["referenceName"],
+                     "name": el_fld_["name"],
+                     "defaultValue": def_val,
+                     }
+                )
+        el_dict = {
+            "name": el_["name"],
+            "referenceName": el_["referenceName"],
+            "fields": fields
+        }
+        res_conf.append(el_dict)
+    if res_conf:
+        with open(file, 'w') as outfile:
+            json.dump(res_conf, outfile, indent=4)
+
 
 if __name__ == '__main__':
     main()

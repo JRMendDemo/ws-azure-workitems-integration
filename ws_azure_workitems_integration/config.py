@@ -8,7 +8,7 @@ sys.path.append(file_dir)
 from ws_sdk import WS
 
 conf_file = "./local-params.config" if os.path.exists("./local-params.config") else "./params.config"
-wi_types = "./workitems_type.json"
+wi_types = "./local-workitem_types.json" if os.path.exists("./local-workitem_types.json") else "./workitem_types.json"
 
 @dataclass
 class Config:
@@ -23,8 +23,8 @@ class Config:
     ws_conn: WS
     utc_delta : int
     last_run : str
-    wsproducts : str
-    wsprojects : str
+    wsproducttoken : str
+    wsprojecttoken : str
     azure_area : str
     azure_type : str
 

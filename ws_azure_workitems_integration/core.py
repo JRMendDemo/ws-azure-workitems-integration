@@ -234,11 +234,12 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
         if fld["defaultValue"]:
             step1 = fld["defaultValue"].split("&")
             for st_ in step1:
-                val += f"{mend_val(st_[5:], prj)} " if "mend:" in st_ else f"{st_} "
+                t = f"{mend_val(st_[5:], prj)}" if "MEND:" in st_ else st_
+                if t:
+                    val += t
+                elif "MEND:" in st_:
+                    logger.warning(f"The value of field {fld['referenceName']} is empty. Check the syntax that was provided. It could be the reason.")
         return fld["referenceName"], val.strip()
-
-    def azure_field_name(custom_name : str):
-        return "Custom."+custom_name.replace(" ", "")
 
     def mend_val(alert_val : str, prj_el : list):
         lst = alert_val.split(".")
@@ -246,6 +247,11 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
         for lst_ in lst:
             try:
                 temp = prj_el[lst_] if not temp else temp[lst_]
+                if type(temp) is list:
+                    rs = ""
+                    for el_ in temp:
+                        rs += el_ +","
+                    return rs[:-1] if rs else ""
             except:
                 return ""
         return temp
@@ -328,13 +334,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                                 "path" : f"/fields/{fld_name}", #azure_field_name(custom_[0])
                                 "value" : fld_val
                             })
-                        '''
-                        data.append({
-                            "op" : "add",
-                            "path" : f"/fields/{azure_field_name(custom_[0])}",
-                            "value" : mend_val(custom_[1],prj_el)
-                        })
-                        '''
+
                     if not (conf.azure_area is None or conf.azure_area == ""):
                         data.append(
                             {
@@ -432,8 +432,8 @@ def startup():
             ws_user_key=get_conf_value(config['DEFAULT'].get("WsUserKey"), os.environ.get("WS_USERKEY")),
             ws_org_token=get_conf_value(config['DEFAULT'].get("Apikey"), os.environ.get("WS_TOKEN")),
             ws_url=get_conf_value(config['DEFAULT'].get("WsUrl"), os.environ.get("WS_URL")),
-            wsproducts=get_conf_value(config['links'].get("wsproducttoken"), os.environ.get("WS_PRODUCTTOKEN")),
-            wsprojects=get_conf_value(config['links'].get("wsprojecttoken"), os.environ.get("WS_PROJECTTOKEN")),
+            wsproducttoken=get_conf_value(config['links'].get("wsproducttoken"), os.environ.get("WS_PRODUCTTOKEN")),
+            wsprojecttoken=get_conf_value(config['links'].get("wsprojecttoken"), os.environ.get("WS_PROJECTTOKEN")),
             azure_url=get_conf_value(config['DEFAULT'].get('AzureUrl'), os.environ.get("AZURE_URL")),
             azure_org=get_conf_value(config['DEFAULT'].get('AzureOrg'), os.environ.get("AZURE_ORG")),
             azure_pat=get_conf_value(config['DEFAULT'].get('AzurePat'), os.environ.get("AZURE_PAT")),

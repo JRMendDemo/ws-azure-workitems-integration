@@ -23,26 +23,27 @@
 * A user must have permission to create and update Work Items tasks in the Azure DevOps organization 
 
 ## Installation on the Azure side:
-1. Create a **pipeline** in your Azure organization and config it using the ![azure-pipelines.yml](https://github.com/whitesource-ps/ws-azure-workitems-integration/blob/master/azure-pipelines.yml)
+1. Create a **pipeline** in your Azure organization and config it using the [azure-pipelines.yml](https://github.com/whitesource-ps/ws-azure-workitems-integration/blob/master/azure-pipelines.yml)
 2. Configure the appropriate variables (secrets) in the Azure pipeline
 
 ### Command-Line Arguments and linked Azure variables
-| Parameter                          |  Type  | Azure variable    | Required | Description                                                                                                                                                                                                      |
-|:-----------------------------------|:------:|-------------------|:--------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **&#x2011;&#x2011;help**           | switch |                   |    No    | Show help and exit                                                                                                                                                                                               |
-| **&#x2011;&#x2011;wsurl**          | string | wsurl             |   Yes    | Mend server URL                                                                                                                                                                                                  |
-| **&#x2011;&#x2011;userKey**        | string | userkey           |   Yes    | Mend User Key                                                                                                                                                                                                    |
-| **&#x2011;&#x2011;apiKey**         | string | apikey            |   Yes    | Mend API Key                                                                                                                                                                                                     |
-| **&#x2011;&#x2011;azureurl**       | string | azureurl          |    No    | Azure Server URL (default: `https://dev.azure.com/` )                                                                                                                                                            | 
-| **&#x2011;&#x2011;azureorg**       | string | azureorg          |   Yes    | Azure Organization Name                                                                                                                                                                                          | 
-| **&#x2011;&#x2011;azurearea**      | string | azurearea         |    No    | **FULL** path of Azure Area (default: Azure Project root)*                                                                                                                                                       | 
-| **&#x2011;&#x2011;azurepat**       | string | azurepat          |   Yes    | Azure PAT ([Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows))                              |
-| **&#x2011;&#x2011;azureproject**   | string | azureproject      |   Yes    | Azure project name                                                                                                                                                                                               |
-| **&#x2011;&#x2011;azuretype**      | string | azuretype         |    No    | Type of created Azure object (WI or Bug. (default: `wi`)**                                                                                                                                                       |
-| **&#x2011;&#x2011;wsprojecttoken** | string | wsprojects        |    No    | List of all your project's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                             |
-| **&#x2011;&#x2011;wsproducttoken** | string | wsproducts        |    No    | List of all your product's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                             |
-| **&#x2011;&#x2011;type**           | string | modificationtypes |    No    | [List of modification types](https://whitesource.atlassian.net/wiki/spaces/PROD/pages/2429681685/Issue+Tracker+Integration+-+API+Documentation#getOrganizationLastModifiedProjects) (default: `POLICY_MATCH`)*** |
-| **&#x2011;&#x2011;utcdelta**       | string | utcdelta          |   Yes    | The delta between the local time of your **computer where you run tool** and **MEND's environment**                                                                                                              |
+| Parameter                          |  Type  | Azure variable    | Required | Description                                                                                                                                                                                                     |
+|:-----------------------------------|:------:|-------------------|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **&#x2011;&#x2011;help**           | switch |                   |    No    | Show help and exit                                                                                                                                                                                              |
+| **&#x2011;&#x2011;wsurl**          | string | wsurl             |   Yes    | Mend server URL                                                                                                                                                                                                 |
+| **&#x2011;&#x2011;userKey**        | string | userkey           |   Yes    | Mend User Key                                                                                                                                                                                                   |
+| **&#x2011;&#x2011;apiKey**         | string | apikey            |   Yes    | Mend API Key                                                                                                                                                                                                    |
+| **&#x2011;&#x2011;azureurl**       | string | azureurl          |    No    | Azure Server URL (default: `https://dev.azure.com/` )                                                                                                                                                           | 
+| **&#x2011;&#x2011;azureorg**       | string | azureorg          |   Yes    | Azure Organization Name                                                                                                                                                                                         | 
+| **&#x2011;&#x2011;azurearea**      | string | azurearea         |    No    | **FULL** path of Azure Area (default: Azure Project root)*                                                                                                                                                      | 
+| **&#x2011;&#x2011;azurepat**       | string | azurepat          |   Yes    | Azure PAT ([Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows))                             |
+| **&#x2011;&#x2011;azureproject**   | string | azureproject      |   Yes    | Azure project name                                                                                                                                                                                              |
+| **&#x2011;&#x2011;azuretype**      | string | azuretype         |    No    | Type of created Azure object (default: `Task`)***.                                                                                                                                                              |
+| **&#x2011;&#x2011;wsprojecttoken** | string | wsprojecttoken    |    No    | List of all your project's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                            |
+| **&#x2011;&#x2011;wsproducttoken** | string | wsproducttoken    |    No    | List of all your product's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                            |
+| **&#x2011;&#x2011;type**           | string | modificationtypes |    No    | [List of modification types](https://whitesource.atlassian.net/wiki/spaces/PROD/pages/2429681685/Issue+Tracker+Integration+-+API+Documentation#getOrganizationLastModifiedProjects) (default: `POLICY_MATCH`)** |
+| **&#x2011;&#x2011;utcdelta**       | string | utcdelta          |   Yes    | The delta between the local time of your **computer where you run tool** and **MEND's environment**                                                                                                             |
+| **&#x2011;&#x2011;customfields**   | string | customfields      |    No    | The string defines names and values for custom fields of WorkItem ****                                                                                                                                          |
 
 \* The area value could be like this **"SomeProject\\\SomeArea_1\\\SomeArea_2"**
       1. Please, pay attention that the **slash needs to be escaped as shown in the example**  
@@ -51,22 +52,21 @@
 \** 1. Possible values are : **INVENTORY,METADATA,SCAN,POLICY_MATCH,SCAN_COMMENT,SOURCE_FILE_MATCH** or **All** for all types   
    2. Please, pay attention that values should be provided **without** spaces as described above  
 
-\***  1. In case **wi** all created Work Items will have type Issue  
-    2. In case **bug** all created Work Items will have type Bug
+\***  There are several types of working item:
+1. **Epic** (Basic, Agile, Scrum, and CMMI)
+2. **Feature** (Agile, Scrum, and CMMI)
+3. **User Story** (Agile), Product backlog item (Scrum), Requirement (CMMI)
+4. **Task** (Basic, Agile, Scrum, and CMMI)
+5. **Impediment** (Scrum), Issue (Agile and Basic)
+6. **Bug** (Agile, Scrum, and CMMI)
 
-**Example of products/projects definition**  
-```mermaid
-graph TD
-Product_1 --> Project_1
-Product_1 --> Project_2
-Product_1 --> Project_3
-Product_2 --> Project_4
-Product_2 --> Project_5
-Product_2 --> Project_6
-```  
-    If you want to include the sync process for all the projects of Product_1, as well as Project_5 and Project_6 from Product_2, then your parameters should be  
-    wsproducts = ProductToken_1  
-    wsprojects = ProjectToken_5, ProjectToken_6  
-    **This configuration is equal to such a scheme:**  
-    wsproducts =   
-    wsprojects = ProjectToken_1, ProjectToken_2, ProjectToken_3, ProjectToken_5, ProjectToken_6  
+\**** The syntax of ```customfields``` is  
+**[Name of Custom Field1]::[Value of Custom Field1];[Name of Custom Field2]::[Value of Custom Field2]** where  
+**Value of Custom Field** can be provided as combination of Mend object name and free text.
+#### Example of customfields parameter
+SomeCustomField1::MEND:library.localPaths&Some Free Text;SomeCustomField2::MEND:policy.owner.email
+1. **SomeCustomField1** and **SomeCustomField2** are names of Custom Azure Fields 
+2. **MEND:** This is a special operator that indicates that it is followed by the name of the Mend object.
+3. **library.localPath** and **policy.owner.email** are names of Mend objects
+4. **&** is a separator of different values for **SomeCustomField1** or **SomeCustomField2** field
+5. Pairs [Some custom field]::[Custom value] separated by **;** 

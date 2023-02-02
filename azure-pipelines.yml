@@ -44,15 +44,15 @@ steps:
   condition: and(eq(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation config file'
 
-- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsprojecttoken $(wsprojects) --azurearea $(areapath) --azuretype $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsprojecttoken $(wsprojecttoken) --azurearea $(areapath) --azuretype $(azuretype) --customfields $(customfields)
   condition: and(eq(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation config file'
 
-- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducts) --azurearea $(areapath) --azuretype $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducttoken) --azurearea $(areapath) --azuretype $(azuretype) --customfields $(customfields)
   condition: and(ne(variables.prd,''), eq(variables.prj,''))
   displayName: 'Preparation config file'
 
-- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducts) --wsprojecttoken $(wsprojects) --azurearea $(areapath) --azuretype $(azuretype)
+- script: python update_param.py --userKey $(userkey) --apiKey $(apikey) --wsurl $(wsurl) --azureUrl $(azureurl) --azureorg $(azureorg) --azurepat $(azurepat) --type $(modificationtypes) --utcdelta $(utcdelta) --azureproject $(azureproject) --wsproducttoken $(wsproducttoken) --wsprojecttoken $(wsprojecttoken) --azurearea $(areapath) --azuretype $(azuretype) --customfields $(customfields)
   condition: and(ne(variables.prd,''), ne(variables.prj,''))
   displayName: 'Preparation config file'
 
