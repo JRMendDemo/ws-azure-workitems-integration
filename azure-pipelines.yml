@@ -58,4 +58,4 @@ steps:
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
-- bash: echo "##vso[task.setvariable variable=lastrun;]2023-02-02 11:11:00"
+- bash: echo "##vso[task.setvariable variable=lastrun;]Test"
