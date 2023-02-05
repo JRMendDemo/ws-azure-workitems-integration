@@ -48,6 +48,10 @@ def main():
         config.set(section="DEFAULT", option="LastRun", value=todate)
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
+        try:
+            print(f'##vso[task.setvariable variable=lastrun;]{todate}')
+        except:
+            pass
     else:
         logger.error("Config file was not found")
         exit(-1)
