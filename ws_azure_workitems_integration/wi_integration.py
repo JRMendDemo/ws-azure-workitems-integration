@@ -50,8 +50,8 @@ def main():
             config.write(configfile)
         try:
             print(f'##vso[task.setvariable variable=lastrun;]{todate}')
-        except:
-            pass
+        except Exception as err:
+            logger.info(f"Error details: {err}")
     else:
         logger.error("Config file was not found")
         exit(-1)
