@@ -49,7 +49,7 @@ def main():
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
         try:
-            print(f'##vso[task.setvariable variable=lastrun;]{todate}')
+            print(f'##vso[task.setvariable variable=lastrun;isOutput=true]{todate}')
         except Exception as err:
             logger.info(f"Error details: {err}")
     else:
