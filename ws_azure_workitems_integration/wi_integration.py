@@ -31,7 +31,6 @@ def main():
         logger.info("Sync process is started")
         prepare_json_links()
         config.read(conf_file)
-        #custom_fields = list(set(config.items('Custom'))-set(config.items('DEFAULT')))
         last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
         if not os.path.exists(wi_types):
             create_wi_json(wi_types)
@@ -72,22 +71,23 @@ def create_wi_json(file : str):
     r, errcode = run_azure_api(api_type="GET", api="wit/workitemtypes/", project=conf.azure_project, data={},
                                version="7.0")
     res_conf = []
-    for el_ in r["value"]:
-        fields = []
-        for el_fld_ in el_["fields"]:
-            if "Custom." in el_fld_["referenceName"] or el_fld_["alwaysRequired"]:
-                fields.append(
-                    {"referenceName": el_fld_["referenceName"],
-                     "name": el_fld_["name"],
-                     "defaultValue": el_fld_["defaultValue"],
-                     }
-                )
-        el_dict = {
-            "name": el_["name"],
-            "referenceName": el_["referenceName"],
-            "fields": fields
-        }
-        res_conf.append(el_dict)
+    if errcode == 0:
+        for el_ in r["value"]:
+            fields = []
+            for el_fld_ in el_["fields"]:
+                if "Custom." in el_fld_["referenceName"] or el_fld_["alwaysRequired"]:
+                    fields.append(
+                        {"referenceName": el_fld_["referenceName"],
+                         "name": el_fld_["name"],
+                         "defaultValue": el_fld_["defaultValue"],
+                         }
+                    )
+            el_dict = {
+                "name": el_["name"],
+                "referenceName": el_["referenceName"],
+                "fields": fields
+            }
+            res_conf.append(el_dict)
     if res_conf:
         with open(file, 'w') as outfile:
             json.dump(res_conf, outfile, indent=4)
@@ -104,7 +104,7 @@ def prepare_json_links():
     prj_lst = []
     res_json = {}
 
-    if prd_lst is not None:
+    if prd_lst:
         for el_prd in prd_lst:
             pr_el = get_all_prj_prd(el_prd)
             for prj_one in pr_el[1:]:

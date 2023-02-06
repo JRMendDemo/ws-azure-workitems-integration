@@ -109,7 +109,7 @@ def check_wi_id(id: str):
     try:
         data = {"query" : f'select [System.Id],[System.State] From WorkItems Where [System.Title]="{id}" And [System.TeamProject] = "{conf.azure_project}" '}
         r, errocode = run_azure_api(api_type="POST",api="wit/wiql", version="7.0", project=conf.azure_project,data=data, header="application/json")
-        return r["workItems"][0]["id"]
+        return r["workItems"][0]["id"] if errocode == 0 else 0
     except:
         return 0
 

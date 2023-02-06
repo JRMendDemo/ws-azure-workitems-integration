@@ -81,10 +81,6 @@ def create_wi_json(file : str, args):
                               headers={'Content-Type': f'{header}'},
                               auth=('', args.azure_pat))
             res = json.loads(r.text)
-            try:
-                errorcode = 1
-            except:
-                pass
         except Exception as err:
             errorcode = 1
             res = {"Internal error": f"{err}"}
@@ -94,23 +90,24 @@ def create_wi_json(file : str, args):
     r, errcode = run_azure_api(api_type="GET", api="wit/workitemtypes/", project=args.azure_prj, data={},
                                version="7.0")
     res_conf = []
-    for el_ in r["value"]:
-        fields = []
-        for el_fld_ in el_["fields"]:
-            if "Custom." in el_fld_["referenceName"] or el_fld_["alwaysRequired"]:
-                def_val = get_defval_from_custom(el_fld_["referenceName"][7:]) if "Custom." in el_fld_["referenceName"] else el_fld_["defaultValue"]
-                fields.append(
-                    {"referenceName": el_fld_["referenceName"],
-                     "name": el_fld_["name"],
-                     "defaultValue": def_val,
-                     }
-                )
-        el_dict = {
-            "name": el_["name"],
-            "referenceName": el_["referenceName"],
-            "fields": fields
-        }
-        res_conf.append(el_dict)
+    if errcode == 0:
+        for el_ in r["value"]:
+            fields = []
+            for el_fld_ in el_["fields"]:
+                if "Custom." in el_fld_["referenceName"] or el_fld_["alwaysRequired"]:
+                    def_val = get_defval_from_custom(el_fld_["referenceName"][7:]) if "Custom." in el_fld_["referenceName"] else el_fld_["defaultValue"]
+                    fields.append(
+                        {"referenceName": el_fld_["referenceName"],
+                         "name": el_fld_["name"],
+                         "defaultValue": def_val,
+                         }
+                    )
+            el_dict = {
+                "name": el_["name"],
+                "referenceName": el_["referenceName"],
+                "fields": fields
+            }
+            res_conf.append(el_dict)
     if res_conf:
         with open(file, 'w') as outfile:
             json.dump(res_conf, outfile, indent=4)
