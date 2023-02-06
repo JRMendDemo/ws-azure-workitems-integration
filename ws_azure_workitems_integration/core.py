@@ -127,7 +127,7 @@ def update_wi_in_thread():
                 id_str += str(wi_["id"]) + ","
             id_str = id_str[:-1] if len(r["workItems"]) > 0 else ""
 
-        if id_str != "":
+        if id_str:
             wi, errcode = run_azure_api(api_type="GET", api=f"wit/workitems?ids={id_str}&$expand=Relations", data={}, project=conf.azure_project,cmd_type="&")
             if errcode == 0:
                 for wq_el in wi['value']:
@@ -148,7 +148,7 @@ def update_wi_in_thread():
                                    kv_dict={"projectToken": prj_token, "wsPolicyIssueItemUuid": uuid,
                                             "externalIssues": ext_issues})
 
-                return f"Updated {len(wi['value'])} {'Work Item' if conf.azure_type == 'wi' else 'Bug'}s"
+                return f"Updated {len(wi['value'])} {conf.azure_type}s"
         else:
             return "Nothing to update"
 
@@ -347,9 +347,9 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                         #r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
                         r, errcode = run_azure_api(api_type="POST", api=f"wit/workitems/${wi_type}", data=data, project=azure_prj)
                         if errcode == 0:
-                            logger.info(f"{'Work Item' if conf.azure_type == 'wi' else 'Bug'} {count_item} of Mend project {prj_name} created")
+                            logger.info(f"{conf.azure_type} {count_item} of Mend project {prj_name} created")
                         else:
-                            logger.warning(f"{'Work Item' if conf.azure_type == 'wi' else 'Bug'} was not created. Details: {r['message']}")
+                            logger.warning(f"{conf.azure_type} was not created. Details: {r['message']}")
                     except Exception as err:
                         logger.error(f"Error was proceeded during creation: {err}")
                     count_item += 1
@@ -357,7 +357,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                     if exist_id not in del_:
                         update_ws_issue(issue_id, prj_token, exist_id)
         if errcode == 0:
-            return f"{count_item-1} {'Work Item' if conf.azure_type == 'wi' else 'Bug'}s were created or updated successfully"
+            return f"{count_item-1} {conf.azure_type}s were created or updated successfully"
     except Exception as err:
         return f"Internal error was proceeded. Details : {err}"
 
@@ -418,6 +418,7 @@ def get_keys_by_value(dictOfElements, valueToFind):
 
 def extract_url(url : str)-> str:
     url_ = url if "https://" in url else f"https://{url}"
+    url_ = url_.replace("http://","")
     pos = url_.find("/",8)
     return url_[0:pos] if pos>-1 else url_
 
