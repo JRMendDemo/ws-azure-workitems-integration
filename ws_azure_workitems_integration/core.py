@@ -29,6 +29,42 @@ logger_wssdk.setLevel(logging.INFO)
 conf = None
 
 
+def get_lastrun():
+    res = ""
+    azure_prj_id = get_azureprj_id(conf.azure_project)
+    if azure_prj_id:
+        r, errorcode = run_azure_api(api_type="GET", api=f"projects/{azure_prj_id}/properties", data={},
+                                     version="7.0-preview", cmd_type="?keys=Lastrun&", header="application/json")
+
+    if errorcode == 0:
+        res = try_or_error(lambda: r["value"][0]["value"], "")
+    return res
+
+
+def set_lastrun(lastrun: str):
+    azure_prj_id = get_azureprj_id(conf.azure_project)
+    if azure_prj_id:
+        data = [{
+            "op": "add",
+            "path": "/Lastrun",
+            "value": f"{lastrun}"
+        }]
+        r, errorcode = run_azure_api(api_type="PATCH", api=f"projects/{azure_prj_id}/properties", data=data,
+                                     version="7.0-preview")
+
+
+def get_azureprj_id(prj_name : str) :
+    res = ""
+    r, errorcode = run_azure_api(api_type="GET",api=f"projects", data={},
+                           version="7.0",header="application/json")
+    if errorcode == 0:
+        for prj_ in r["value"]:
+            if prj_["name"] == prj_name:
+                res = prj_["id"]
+                break
+    return res
+
+
 def try_or_error(supplier, msg):
     try:
         return supplier()
@@ -45,7 +81,7 @@ def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
                             kv_dict={"projectToken": prj_token, "policyActionType": "CREATE_ISSUE", "fromDateTime" : sdate, "toDateTime" : edate})
         rt_res = [rt['product']['productName'], rt['project']['projectName']]
         for rt_el_val in rt['issues']:
-            if try_or_error(lambda :rt_el_val['policy']['enabled'],False):
+            #if try_or_error(lambda :rt_el_val['policy']['enabled'],False):
                 rt_res.append(rt_el_val)
     except Exception as err:
         rt_res = ["Internal error", f"{err}"]
@@ -82,12 +118,19 @@ def run_azure_api(api_type: str, api: str, data={}, version: str = "6.0", projec
     try:
         url = f"{conf.azure_url}{conf.azure_org}/_apis/{api}{cmd_type}api-version={version}" if project == "" else f"{conf.azure_url}{conf.azure_org}/{project}/_apis/{api}{cmd_type}api-version={version}"
 
-        r = requests.get(url, json=data,
-                         headers={'Content-Type': f'{header}'},
-                         auth=('', conf.azure_pat)) if api_type == "GET" else \
-            requests.post(url, json=data,
+        if api_type == "GET":
+            r = requests.get(url, json=data,
+                             headers={'Content-Type': f'{header}'},
+                             auth=('', conf.azure_pat))
+        elif api_type == "POST":
+            r = requests.post(url, json=data,
                           headers={'Content-Type': f'{header}'},
                           auth=('', conf.azure_pat))
+        elif api_type == "PATCH":
+            r = requests.patch(url, json=data,
+                          headers={'Content-Type': f'{header}'},
+                          auth=('', conf.azure_pat))
+
         res = json.loads(r.text)
         try:
             msg = res['message']
@@ -118,7 +161,7 @@ def update_wi_in_thread():
     global conf
     startup()
     try:
-        data = {"query" : f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{conf.last_run}" And [System.TeamProject] = "{conf.azure_project}"'}
+        data = {"query" : f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{get_lastrun()}" And [System.TeamProject] = "{conf.azure_project}"'}
         r, errocode = run_azure_api(api_type="POST",api="wit/wiql", version="7.0", project=conf.azure_project,data=data, header="application/json",cmd_type="?timePrecision=True&")
 
         id_str = ""
@@ -268,14 +311,17 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
             # lib_uuid= prj_el['library']['keyUuid']
             lib_url = prj_el["library"]["url"]
             lib_name = prj_el["library"]["filename"]
-            lib_ver = prj_el["library"]["version"]
+            #lib_ver = prj_el["library"]["version"]
             lib_local_path = ""
-            for loc_path_ in prj_el["library"]["localPaths"]:
-                lib_local_path += try_or_error(lambda: loc_path_,"")+"<br>"
+            try:
+                for loc_path_ in prj_el["library"]["localPaths"]:
+                    lib_local_path += try_or_error(lambda: loc_path_,"")+"<br>"
+            except:
+                pass
             for i, policy_el in enumerate(prj_el["policyViolations"]):
                 issue_id = policy_el["issueUuid"]
-                viol_type = policy_el["violationType"]
-                viol_status = policy_el["status"]
+                #viol_type = policy_el["violationType"]
+                #viol_status = policy_el["status"]
                 vul_name = try_or_error(lambda:policy_el["vulnerability"]["name"],"")
                 vul_severity = try_or_error(lambda:policy_el["vulnerability"]["cvss3_severity"],"")
                 vul_title = f"{vul_name} ({vul_severity}) detected in {lib_name}"
@@ -344,7 +390,6 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                             }
                         )
                     try:
-                        #r, errcode = run_azure_api(api_type="POST", api="wit/workitems/$task" if conf.azure_type == "wi" else "wit/workitems/$Bug", data=data, project=azure_prj)
                         r, errcode = run_azure_api(api_type="POST", api=f"wit/workitems/${wi_type}", data=data, project=azure_prj)
                         if errcode == 0:
                             logger.info(f"{conf.azure_type} {count_item} of Mend project {prj_name} created")
@@ -441,13 +486,13 @@ def startup():
             azure_project=get_conf_value(config['links'].get("azureproject"), os.environ.get("AZURE_PROJECT")),
             modification_types=get_conf_value(config['DEFAULT'].get('modificationTypes'),
                                               os.environ.get("modification_Types")),
-            last_run=get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run")),
+            first_run=get_conf_value(config['DEFAULT'].get("FirstRun"), "No"),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
             azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
             azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "Task"),
             ws_conn=None
         )
-        conf.last_run = "2022-01-01 00:00:01" if not conf.last_run else conf.last_run
+        #conf.last_run = "2022-01-01 00:00:01" if not conf.last_run else conf.last_run
 
         try:
             conf.ws_conn = WS(url=extract_url(conf.ws_url),

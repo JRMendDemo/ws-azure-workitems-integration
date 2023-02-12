@@ -22,7 +22,7 @@ class Config:
     modification_types: list
     ws_conn: WS
     utc_delta : int
-    last_run : str
+    first_run : str
     wsproducttoken : str
     wsprojecttoken : str
     azure_area : str
@@ -40,7 +40,7 @@ class Config:
             "azure_area" : self.azure_area,
             "modification_types" : self.modification_types,
             "utc_delta" : self.utc_delta,
-            "last_run" : self.last_run,
+            "first_run" : self.last_run,
             "azure_type" : self.azure_type
         }
         return res

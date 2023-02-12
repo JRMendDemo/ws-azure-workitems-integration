@@ -12,7 +12,7 @@ from configparser import ConfigParser
 
 from _version import __tool_name__, __version__, __description__
 from config import *
-from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup, run_azure_api
+from core import run_sync, update_wi_in_thread, get_all_prj_prd, get_keys_by_value, startup, run_azure_api, get_lastrun, set_lastrun
 
 logger = logging.getLogger("Sync Run")
 logging.getLogger('urllib3').setLevel(logging.INFO)
@@ -31,20 +31,26 @@ def main():
         logger.info("Sync process is started")
         prepare_json_links()
         config.read(conf_file)
-        last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
+        time_delta = config['DEFAULT'].getint("utcdelta",0)
+        #now = datetime.datetime.now() + datetime.timedelta(hours=-2)
+        #set_lastrun(now.strftime("%Y-%m-%d %H:%M:%S"))
+        last_run = get_lastrun() if conf.first_run == "No" else ((datetime.datetime.now() + datetime.timedelta(hours=time_delta)-datetime.timedelta(hours=8760)).strftime("%Y-%m-%d %H:%M:%S"))
+        set_lastrun(lastrun=last_run)
+        #last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
         if not os.path.exists(wi_types):
             create_wi_json(wi_types)
         wi_type, wi_fields = load_wi_json(wi_types)
 
-        last_run = "2022-01-01 00:00:01" if not last_run else last_run # Just for first run, in case was not set in params.config
-        time_delta = config['DEFAULT'].getint("utcdelta",0)
+        #last_run = "2022-01-01 00:00:01" if not last_run else last_run # Just for first run, in case was not set in params.config
         now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
         todate = now.strftime("%Y-%m-%d %H:%M:%S")
         time_sync = (now-datetime.datetime.strptime(last_run, "%Y-%m-%d %H:%M:%S")).total_seconds()/3600 #in hours
         time_sync = time_sync if time_sync > 1 else 1
         logger.info(run_sync((now - datetime.timedelta(hours=time_sync)).strftime("%Y-%m-%d %H:%M:%S"),todate, wi_fields, wi_type, True))
         logger.info(update_wi_in_thread())
-        config.set(section="DEFAULT", option="LastRun", value=todate)
+        now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
+        set_lastrun(now.strftime("%Y-%m-%d %H:%M:%S"))
+        #config.set(section="DEFAULT", option="LastRun", value=todate)
         with open(conf_file, 'w') as configfile:
             config.write(configfile)
     else:

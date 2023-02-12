@@ -24,6 +24,7 @@ def parse_args():
     parser.add_argument('-wpj', '--wsprojecttoken', help="WS Prj", dest='ws_prj',default="")
     parser.add_argument('-at', '--azuretype', help="Azure Type", dest='azure_type',default="Task")
     parser.add_argument('-cf', '--customfields', help="Custom Fields", dest='azure_custom',default="")
+    parser.add_argument('-fr', '--firstrun', help="First Run", dest='first_run',default="No")
     arguments = parser.parse_args()
 
     return arguments
@@ -45,6 +46,7 @@ def main():
         config.set(section="DEFAULT", option="utcdelta", value=args.utc_delta)
         config.set(section="DEFAULT", option="azurearea", value=args.azure_area)
         config.set(section="DEFAULT", option="azuretype", value=args.azure_type)
+        config.set(section="DEFAULT", option="firstrun", value=args.first_run)
 
         config.set(section="links", option="azureproject", value=args.azure_prj)
         config.set(section="links", option="wsproducttoken", value=args.ws_prd)

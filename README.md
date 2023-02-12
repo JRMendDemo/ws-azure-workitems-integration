@@ -43,6 +43,7 @@
 | **&#x2011;&#x2011;wsproducttoken** | string | wsproducttoken    |    No    | List of all your product's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                            |
 | **&#x2011;&#x2011;type**           | string | modificationtypes |    No    | [List of modification types](https://whitesource.atlassian.net/wiki/spaces/PROD/pages/2429681685/Issue+Tracker+Integration+-+API+Documentation#getOrganizationLastModifiedProjects) (default: `POLICY_MATCH`)** |
 | **&#x2011;&#x2011;utcdelta**       | string | utcdelta          |   Yes    | The delta between the local time of your **computer where you run tool** and **MEND's environment**                                                                                                             |
+| **&#x2011;&#x2011;firstrun**       | string | firstrun          |    No    | The parameter should be set to `Yes` in case initial run (default: `No`)                                                                                                                          |
 | **&#x2011;&#x2011;customfields**   | string | customfields      |    No    | The string defines names and values for custom fields of WorkItem ****                                                                                                                                          |
 
 \* The area value could be like this **"SomeProject\\\SomeArea_1\\\SomeArea_2"**
