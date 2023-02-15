@@ -2,6 +2,7 @@ import json
 import os
 import logging
 import sys
+import uuid
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
@@ -30,15 +31,12 @@ conf = None
 
 
 def get_lastrun():
-    res = ""
     azure_prj_id = get_azureprj_id(conf.azure_project)
     if azure_prj_id:
         r, errorcode = run_azure_api(api_type="GET", api=f"projects/{azure_prj_id}/properties", data={},
                                      version="7.0-preview", cmd_type="?keys=Lastrun&", header="application/json")
 
-    if errorcode == 0:
-        res = try_or_error(lambda: r["value"][0]["value"], "")
-    return res
+    return try_or_error(lambda: r["value"][0]["value"], "")
 
 
 def set_lastrun(lastrun: str):
@@ -81,7 +79,7 @@ def fetch_prj_policy(prj_token: str, sdate: str, edate: str):
                             kv_dict={"projectToken": prj_token, "policyActionType": "CREATE_ISSUE", "fromDateTime" : sdate, "toDateTime" : edate})
         rt_res = [rt['product']['productName'], rt['project']['projectName']]
         for rt_el_val in rt['issues']:
-            #if try_or_error(lambda :rt_el_val['policy']['enabled'],False):
+            if try_or_error(lambda :rt_el_val['policy']['enabled'],False):
                 rt_res.append(rt_el_val)
     except Exception as err:
         rt_res = ["Internal error", f"{err}"]
@@ -335,8 +333,6 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                 vul_fix_type = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["type"],"")
                 vul_fix_release_date = try_or_error(lambda:policy_el["vulnerability"]["topFix"]["date"],"")
 
-                #exist_id = check_wi_id(f"{prj_name[0:20]}_{lib_name}_v.{lib_ver}_#{str(i + 1)}") if vul_severity == "" \
-                #    else check_wi_id(f"{prj_name[0:20]}_{vul_severity}_{lib_name}_v.{lib_ver}_#{str(i + 1)}")
                 exist_id = check_wi_id(vul_title)
                 if exist_id == 0:
                     priority = set_priority(float(vul_score))
@@ -452,17 +448,15 @@ def get_deleted_items():
 
 
 def get_keys_by_value(dictOfElements, valueToFind):
-    list_of_items = dictOfElements.items()
-    res = ""
-    for item in list_of_items:
+    for item in dictOfElements.items():
         for it in item[1]:
             if it == valueToFind:
                 return item[0]
-    return res
+    return uuid.uuid4().hex
 
 
 def extract_url(url : str)-> str:
-    url_ = url if "https://" in url else f"https://{url}"
+    url_ = url if url.startswith("https://") else f"https://{url}"
     url_ = url_.replace("http://","")
     pos = url_.find("/",8)
     return url_[0:pos] if pos>-1 else url_
@@ -492,7 +486,6 @@ def startup():
             azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "Task"),
             ws_conn=None
         )
-        #conf.last_run = "2022-01-01 00:00:01" if not conf.last_run else conf.last_run
 
         try:
             conf.ws_conn = WS(url=extract_url(conf.ws_url),

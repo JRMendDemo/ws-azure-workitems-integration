@@ -3,7 +3,6 @@ import json
 import logging
 import os
 import sys
-import uuid
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
@@ -126,8 +125,6 @@ def prepare_json_links():
             "sync": 1
         }
         new_ind = get_keys_by_value(res_json, el_prj)
-        if new_ind == "":
-            new_ind = uuid.uuid4().hex
 
         res_json[f"{new_ind}"] = el_json
 
@@ -138,7 +135,6 @@ def prepare_json_links():
             "sync": 1
         }
         new_ind = get_keys_by_value(res_json, el_prj[0])
-        new_ind = uuid.uuid4().hex if new_ind == "" else new_ind
 
         res_json[f"{new_ind}"] = el_json
 

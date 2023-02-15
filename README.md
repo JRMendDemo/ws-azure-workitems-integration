@@ -11,7 +11,7 @@
 * The tool can be configured by Azure DevOps variables
     
 ## Supported Operating Systems
-- **Linux (Bash):**	CentOS, Debian, Ubuntu, RedHat
+- **Linux (Bash):**	CentOS, Debian, Ubuntu
 - **Windows (PowerShell):**	10, 2012, 2016
 
 ## Pre-requisites
@@ -30,9 +30,9 @@
 | Parameter                          |  Type  | Azure variable    | Required | Description                                                                                                                                                                                                     |
 |:-----------------------------------|:------:|-------------------|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **&#x2011;&#x2011;help**           | switch |                   |    No    | Show help and exit                                                                                                                                                                                              |
-| **&#x2011;&#x2011;wsurl**          | string | wsurl             |   Yes    | Mend server URL                                                                                                                                                                                                 |
-| **&#x2011;&#x2011;userKey**        | string | userkey           |   Yes    | Mend User Key                                                                                                                                                                                                   |
-| **&#x2011;&#x2011;apiKey**         | string | apikey            |   Yes    | Mend API Key                                                                                                                                                                                                    |
+| **&#x2011;&#x2011;url**            | string | wsurl             |   Yes    | Mend server URL                                                                                                                                                                                                 |
+| **&#x2011;&#x2011;user-key**       | string | userkey           |   Yes    | Mend User Key                                                                                                                                                                                                   |
+| **&#x2011;&#x2011;api-key**        | string | apikey            |   Yes    | Mend API Key                                                                                                                                                                                                    |
 | **&#x2011;&#x2011;azureurl**       | string | azureurl          |    No    | Azure Server URL (default: `https://dev.azure.com/` )                                                                                                                                                           | 
 | **&#x2011;&#x2011;azureorg**       | string | azureorg          |   Yes    | Azure Organization Name                                                                                                                                                                                         | 
 | **&#x2011;&#x2011;azurearea**      | string | azurearea         |    No    | **FULL** path of Azure Area (default: Azure Project root)*                                                                                                                                                      | 

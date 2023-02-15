@@ -10,10 +10,10 @@ wi_types = "./local-workitem_types.json" if os.path.exists("./local-workitem_typ
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Utility to create params file for Azure WI integration')
-    parser.add_argument('-u', '--userKey', help="WS User Key", dest='ws_user_key', default=os.environ.get("WS_USERKEY"), required=True if not os.environ.get("WS_USERKEY") else False)
-    parser.add_argument('-o', '--apiKey', help="WS Org Key", dest='ws_org_token', default=os.environ.get("WS_TOKEN"), required=True if not os.environ.get("WS_TOKEN") else False)
-    parser.add_argument('-l', '--wsurl', help="WS Url", dest='ws_url', default=os.environ.get("WS_URL"),required=True if not os.environ.get("WS_URL") else False)
-    parser.add_argument('-a', '--azureUrl', help="Azure URL", dest='azure_url', default=os.environ.get("azure_URL", 'https://dev.azure.com/'))
+    parser.add_argument('-u', '--user-key', help="WS User Key", dest='ws_user_key', default=os.environ.get("WS_USERKEY"), required=True if not os.environ.get("WS_USERKEY") else False)
+    parser.add_argument('-o', '--api-key', help="WS Org Key", dest='ws_org_token', default=os.environ.get("WS_TOKEN"), required=True if not os.environ.get("WS_TOKEN") else False)
+    parser.add_argument('-l', '--url', help="WS Url", dest='ws_url', default=os.environ.get("WS_URL"),required=True if not os.environ.get("WS_URL") else False)
+    parser.add_argument('-a', '--azureurl', help="Azure URL", dest='azure_url', default=os.environ.get("azure_URL", 'https://dev.azure.com/'))
     parser.add_argument('-ao', '--azureorg', help="Azure Org", dest='azure_org', default=os.environ.get("azure_org"),required=True)
     parser.add_argument('-ap', '--azurepat', help="Azure PAT", dest='azure_pat', required=True)
     parser.add_argument('-m', '--type', help="Modification Type", dest='m_type', default=os.environ.get("m_type", 'POLICY_MATCH'))

@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 from ws_azure_workitems_integration._version import __version__, __description__, __tool_name__
 
-ws_name = f"ws_{__tool_name__}"
+ws_name = f"mend_{__tool_name__}"
 with open("requirements.txt",'r', encoding='UTF-8', errors='ignore') as file:
   lines = file.readlines()
   lines = [line.rstrip() for line in lines]
@@ -25,6 +25,7 @@ setup(
   classifiers=[
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
   ],
