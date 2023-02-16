@@ -31,8 +31,6 @@ def main():
         prepare_json_links()
         config.read(conf_file)
         time_delta = config['DEFAULT'].getint("utcdelta",0)
-        #now = datetime.datetime.now() + datetime.timedelta(hours=-2)
-        #set_lastrun(now.strftime("%Y-%m-%d %H:%M:%S"))
         last_run = get_lastrun() if conf.first_run == "No" else ((datetime.datetime.now() + datetime.timedelta(hours=time_delta)-datetime.timedelta(hours=8760)).strftime("%Y-%m-%d %H:%M:%S"))
         set_lastrun(lastrun=last_run)
         #last_run = get_conf_value(config['DEFAULT'].get("LastRun"), os.environ.get("Last_Run"))
@@ -40,7 +38,6 @@ def main():
             create_wi_json(wi_types)
         wi_type, wi_fields = load_wi_json(wi_types)
 
-        #last_run = "2022-01-01 00:00:01" if not last_run else last_run # Just for first run, in case was not set in params.config
         now = datetime.datetime.now() + datetime.timedelta(hours=time_delta)
         todate = now.strftime("%Y-%m-%d %H:%M:%S")
         time_sync = (now-datetime.datetime.strptime(last_run, "%Y-%m-%d %H:%M:%S")).total_seconds()/3600 #in hours

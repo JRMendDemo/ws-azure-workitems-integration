@@ -297,6 +297,14 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                 return ""
         return temp
 
+    def field_name_in_data(fld_name : str): # Don't need to add existing element to data
+        res = False
+        for el_ in data:
+            if fld_name in el_["path"]:
+                res = True
+                break
+        return res
+
     global conf
     try:
         ws_prj = fetch_prj_policy(prj_token, sdate, edate)
@@ -370,7 +378,7 @@ def create_wi(prj_token: str, azure_prj: str, sdate: str, edate: str, del_ : lis
                     ]
                     for custom_ in cstm_flds:
                         fld_name, fld_val = analyze_fields(custom_, prj_el)
-                        if fld_val:
+                        if fld_val and not field_name_in_data(fld_name):
                             data.append({
                                 "op" : "add",
                                 "path" : f"/fields/{fld_name}", #azure_field_name(custom_[0])
