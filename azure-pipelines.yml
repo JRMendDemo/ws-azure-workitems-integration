@@ -37,6 +37,9 @@ steps:
   condition: ne(variables.area,'')
   displayName: 'Environment variables preparation #2'
 
+- bash: |
+    echo "##vso[task.setvariable variable=reset;]False"  
+
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
 
@@ -58,5 +61,3 @@ steps:
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
-- bash: |
-    echo "##vso[task.setvariable variable=reset;]False"  
