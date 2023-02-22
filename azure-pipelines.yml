@@ -30,7 +30,7 @@ variables:
    - name: WS_AZUREURL
      value: 'https://dev.azure.com/'
    - name: WS_CUSTOMFIELDS
-     value: 'CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email'
+     value: '"CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email"'
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
@@ -50,7 +50,8 @@ steps:
 - ${{else}}: 
    - script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREAREA}}"
      displayName: 'Environment variables preparation'
-
+- ${{if eq(variables.WS_PRODUCTTOKEN,'')}}:
+   - script: echo '##vso[task.setvariable variable=WS_PRODUCTTOKEN;]""'
 #- bash: echo "##vso[task.setvariable variable=areapath;]${{variables.area}}"
 #  condition: ne(variables.area,'')
 #  displayName: 'Environment variables preparation #2'
