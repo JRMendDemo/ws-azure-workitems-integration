@@ -1,21 +1,22 @@
 from setuptools import find_packages, setup
 from ws_azure_workitems_integration._version import __version__, __description__, __tool_name__
 
-ws_name = f"mend_{__tool_name__}"
+mend_name = f"mend_{__tool_name__}"
 with open("requirements.txt",'r', encoding='UTF-8', errors='ignore') as file:
   lines = file.readlines()
   lines = [line.rstrip() for line in lines]
 
 setup(
-  name=ws_name,
+  name=mend_name,
   entry_points={
     'console_scripts': [
-      f'{__tool_name__}={ws_name}.ws_{__tool_name__}:main'
+      f'{__tool_name__}={mend_name}.{__tool_name__}:main'
     ]},
   packages=find_packages(),
   version= __version__,
   author="Mend Professional Services",
-  author_email="ps@whitesourcesoftware.com",
+  author_email="ps@mend.io",
+  url=f"https://github.com/mend-toolkit/{mend_name.replace('_', '-')}",
   description=__description__,
   license='LICENSE.txt',
   python_requires='>=3.9',

@@ -3,6 +3,7 @@ import os
 import logging
 import sys
 import uuid
+import datetime
 
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
@@ -26,17 +27,21 @@ logger_msrest = logging.getLogger('msrest')
 logger_msrest.setLevel(logging.INFO)
 logger_wssdk = logging.getLogger('ws_sdk')
 logger_wssdk.setLevel(logging.INFO)
+reset_back_time = 87600 # 10 years in hours
 
 conf = None
 
 
-def get_lastrun():
-    azure_prj_id = get_azureprj_id(conf.azure_project)
-    if azure_prj_id:
-        r, errorcode = run_azure_api(api_type="GET", api=f"projects/{azure_prj_id}/properties", data={},
-                                     version="7.0-preview", cmd_type="?keys=Lastrun&", header="application/json")
-
-    return try_or_error(lambda: r["value"][0]["value"], "")
+def get_lastrun(time_delta : int, reset : str):
+    if reset.lower() == "true":
+        last_run = (datetime.datetime.now() + datetime.timedelta(hours=time_delta)-datetime.timedelta(hours=reset_back_time)).strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        azure_prj_id = get_azureprj_id(conf.azure_project)
+        if azure_prj_id:
+            r, errorcode = run_azure_api(api_type="GET", api=f"projects/{azure_prj_id}/properties", data={},
+                                         version="7.0-preview", cmd_type="?keys=Lastrun&", header="application/json")
+        last_run = try_or_error(lambda: r["value"][0]["value"], (datetime.datetime.now() + datetime.timedelta(hours=time_delta)-datetime.timedelta(hours=reset_back_time)).strftime("%Y-%m-%d %H:%M:%S"))
+    return last_run
 
 
 def set_lastrun(lastrun: str):
@@ -159,7 +164,7 @@ def update_wi_in_thread():
     global conf
     startup()
     try:
-        data = {"query" : f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{get_lastrun()}" And [System.TeamProject] = "{conf.azure_project}"'}
+        data = {"query" : f'select [System.Id] From WorkItems Where [System.ChangedDate] > "{get_lastrun(conf.utc_delta,conf.reset)}" And [System.TeamProject] = "{conf.azure_project}"'}
         r, errocode = run_azure_api(api_type="POST",api="wit/wiql", version="7.0", project=conf.azure_project,data=data, header="application/json",cmd_type="?timePrecision=True&")
 
         id_str = ""
@@ -488,7 +493,7 @@ def startup():
             azure_project=get_conf_value(config['links'].get("azureproject"), os.environ.get("AZURE_PROJECT")),
             modification_types=get_conf_value(config['DEFAULT'].get('modificationTypes'),
                                               os.environ.get("modification_Types")),
-            first_run=get_conf_value(config['DEFAULT'].get("FirstRun"), "No"),
+            reset=get_conf_value(config['DEFAULT'].get("reset"), "false"),
             utc_delta = config['DEFAULT'].getint("utcdelta", 0),
             azure_area = get_conf_value(config['DEFAULT'].get('AzureArea'), os.environ.get("AZURE_AREA")),
             azure_type = get_conf_value(config['DEFAULT'].get('azuretype'), "Task"),
