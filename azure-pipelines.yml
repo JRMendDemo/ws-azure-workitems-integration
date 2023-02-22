@@ -17,9 +17,7 @@ pr: none
 
 pool:
   vmImage: ubuntu-latest
-
-   echo "##vso[task.setvariable variable=reset;]False"  
-
+   
 variables:
    - name : prd
      value : $(wsproducttoken)
@@ -61,3 +59,5 @@ steps:
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
+
+- bash: echo "##vso[task.setvariable variable=reset;]False"
