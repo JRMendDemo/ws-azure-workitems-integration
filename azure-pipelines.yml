@@ -64,7 +64,7 @@ steps:
   condition: and(eq(variables.WS_PRODUCTTOKEN,''), eq(variables.WS_PROJECTTOKEN,''))
   displayName: 'Check product/project token'
 
-- script: python update_param.py --user-key $(userkey) --api-key $(apikey) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(azurepat) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
+- script: python update_param.py --user-key $(WS_USERKEY) --api-key $(WS_APIKEY) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(WS_AZUREPAT) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
   displayName: 'Preparation config file'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
