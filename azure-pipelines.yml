@@ -47,9 +47,9 @@ variables:
 steps:
 - script: echo "Starting"
 - ${{if eq(variables.WS_AZUREAREA,'')}}: 
-- script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREPROJECT}}"
+   - script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREPROJECT}}"
 - ${{else}}: 
-- script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREAREA}}"
+   - script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREAREA}}"
   #displayName: 'Environment variables preparation'
 
 #- bash: echo "##vso[task.setvariable variable=areapath;]${{variables.area}}"
