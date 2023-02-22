@@ -34,7 +34,7 @@ variables:
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
-     value: 'False'
+     value: 'True'
    - name: WS_UTCDELTA
      value: '0'
    - name: WS_PRODUCTTOKEN
