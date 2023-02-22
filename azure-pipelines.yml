@@ -20,17 +20,17 @@ pool:
    
 variables:
    - name: WS_AZUREORG
-     value: ''
+     value: 'ps-mend'
    - name: WS_AZUREAREA
      value: ''
    - name: WS_AZUREPROJECT
-     value: ''
+     value: 'TestMendProject'
    - name: WS_AZURETYPE
      value: 'Task'
    - name: WS_AZUREURL
      value: 'https://dev.azure.com/'
    - name: WS_CUSTOMFIELDS
-     value: ''
+     value: 'CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email'
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
@@ -40,9 +40,9 @@ variables:
    - name: WS_PRODUCTTOKEN
      value: ''
    - name: WS_PROJECTTOKEN
-     value: ''
+     value: '0b5bedefaee34a7b88dbc91999593b65594e883a9a2d45a58fe73e06060d38d8'
    - name: WS_URL
-     value: ''
+     value: 'https://saas.whitesourcesoftware.com'
 
 steps:
 - script: echo "Starting"
