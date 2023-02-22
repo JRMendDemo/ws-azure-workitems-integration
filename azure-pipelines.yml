@@ -47,14 +47,14 @@ variables:
 steps:
 - ${{if eq(variables.WS_AZUREAREA,'')}}: 
    - script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREPROJECT}}"
+     displayName: 'Environment variables preparation'
 - ${{else}}: 
    - script: echo "##vso[task.setvariable variable=areapath;]${{variables.WS_AZUREAREA}}"
      displayName: 'Environment variables preparation'
 - ${{if eq(variables.WS_PRODUCTTOKEN,'')}}:
    - script: echo '##vso[task.setvariable variable=WS_PRODUCTTOKEN;]""'
-#- bash: echo "##vso[task.setvariable variable=areapath;]${{variables.area}}"
-#  condition: ne(variables.area,'')
-#  displayName: 'Environment variables preparation #2'
+- ${{if eq(variables.WS_PROJECTTOKEN,'')}}:
+   - script: echo '##vso[task.setvariable variable=WS_PROJECTTOKEN;]""'
 
 
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
@@ -64,19 +64,8 @@ steps:
   condition: and(eq(variables.WS_PRODUCTTOKEN,''), eq(variables.WS_PROJECTTOKEN,''))
   displayName: 'Check product/project token'
 
-#- script: python update_param.py --user-key $(userkey) --api-key $(apikey) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(azurepat) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
-#  condition: and(eq(variables.WS_PRODUCTTOKEN,''), ne(variables.WS_PROJECTTOKEN,''))
-#  displayName: 'Preparation config file'
-
-#- script: python update_param.py --user-key $(userkey) --api-key $(apikey) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(azurepat) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(wsproducttoken) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
-#  condition: and(ne(variables.WS_PRODUCTTOKEN,''), eq(variables.WS_PROJECTTOKEN,''))
-#  displayName: 'Preparation config file'
-
 - script: python update_param.py --user-key $(userkey) --api-key $(apikey) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(azurepat) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
-  #condition: and(ne(variables.WS_PRODUCTTOKEN,''), ne(variables.WS_PROJECTTOKEN,''))
   displayName: 'Preparation config file'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
-
-- bash: echo "##vso[task.setvariable variable=reset;]False"
