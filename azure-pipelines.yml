@@ -20,11 +20,11 @@ pool:
    
 variables:
    - name: WS_AZUREORG
-     value: '' # Required value
+     value: 'ps-mend' # Required value
    - name: WS_AZUREAREA
      value: ''
    - name: WS_AZUREPROJECT
-     value: '' # Required value
+     value: 'TestMendProject' # Required value
    - name: WS_AZURETYPE
      value: 'Task'
    - name: WS_AZUREURL
@@ -40,9 +40,9 @@ variables:
    - name: WS_PRODUCTTOKEN # Product Token or Project Token should be defined
      value: ''
    - name: WS_PROJECTTOKEN # Product Token or Project Token should be defined
-     value: ''
+     value: '0b5bedefaee34a7b88dbc91999593b65594e883a9a2d45a58fe73e06060d38d8'
    - name: WS_URL
-     value: '' # Required value
+     value: 'https://saas.whitesourcesoftware.com' # Required value
    - name: custom
      value: $[replace(variables['WS_CUSTOMFIELDS'], '"', '')]
 
