@@ -60,7 +60,7 @@ steps:
 - script: 
     set tmp=$(WS_CUSTOMFIELDS)
     set firstVar=%tmp:~0%
-    echo $(firstVar)
+    echo %firstVar%
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
 
