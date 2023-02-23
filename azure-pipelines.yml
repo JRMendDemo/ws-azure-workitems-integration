@@ -30,7 +30,7 @@ variables:
    - name: WS_AZUREURL
      value: 'https://dev.azure.com/'
    - name: WS_CUSTOMFIELDS
-     value: 'MEND:library.coordinates'
+     value: 'CustomMandatory::MEND:library.coordinates'
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
