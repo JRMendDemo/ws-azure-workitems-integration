@@ -57,7 +57,7 @@ steps:
 - ${{if eq(variables.WS_PROJECTTOKEN,'')}}:
    - script: echo '##vso[task.setvariable variable=WS_PROJECTTOKEN;]""'
      displayName: 'Environment variables preparation #3'
-
+- script: echo ${variables.WS_CUSTOMFIELDS::1}
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
 
