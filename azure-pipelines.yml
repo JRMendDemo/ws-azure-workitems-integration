@@ -59,7 +59,7 @@ steps:
      displayName: 'Environment variables preparation #3'
 - script: 
     set tmp=$(WS_CUSTOMFIELDS)
-    set firstVar=%tmp:~0%
+    set firstVar=%tmp:~0,1%
     echo %firstVar%
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
