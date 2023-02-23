@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('-ao', '--azureorg', help="Azure Org", dest='azure_org', default=os.environ.get("azure_org"),required=True)
     parser.add_argument('-ap', '--azurepat', help="Azure PAT", dest='azure_pat', required=True)
     parser.add_argument('-m', '--type', help="Modification Type", dest='m_type', default=os.environ.get("m_type", 'POLICY_MATCH'))
-    parser.add_argument('-utc', '--utcdelta', help="UTC delta", dest='utc_delta', required=True)
+    parser.add_argument('-utc', '--utcdelta', help="UTC delta", dest='utc_delta', default=0)
     parser.add_argument('-apj', '--azureproject', help="Azure Prj", dest='azure_prj', required=True)
     parser.add_argument('-aa', '--azurearea', help="Azure Area", dest='azure_area', default="")
     parser.add_argument('-wp', '--wsproducttoken', help="WS Prd", dest='ws_prd', default="")

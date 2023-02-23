@@ -20,29 +20,29 @@ pool:
    
 variables:
    - name: WS_AZUREORG
-     value: 'ps-mend'
+     value: '' # Required value
    - name: WS_AZUREAREA
      value: ''
    - name: WS_AZUREPROJECT
-     value: 'TestMendProject'
+     value: '' # Required value
    - name: WS_AZURETYPE
      value: 'Task'
    - name: WS_AZUREURL
      value: 'https://dev.azure.com/'
    - name: WS_CUSTOMFIELDS
-     value: 'CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email'
+     value: ''
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
-     value: 'True'
+     value: 'False'
    - name: WS_UTCDELTA
      value: '0'
-   - name: WS_PRODUCTTOKEN
+   - name: WS_PRODUCTTOKEN # Product Token or Project Token should be defined
      value: ''
-   - name: WS_PROJECTTOKEN
-     value: '0b5bedefaee34a7b88dbc91999593b65594e883a9a2d45a58fe73e06060d38d8'
+   - name: WS_PROJECTTOKEN # Product Token or Project Token should be defined
+     value: ''
    - name: WS_URL
-     value: 'https://saas.whitesourcesoftware.com'
+     value: '' # Required value
    - name: custom
      value: $[replace(variables['WS_CUSTOMFIELDS'], '"', '')]
 
@@ -68,7 +68,7 @@ steps:
   displayName: 'Check product/project token'
 
 - script: python update_param.py --user-key $(WS_USERKEY) --api-key $(WS_APIKEY) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(WS_AZUREPAT) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields "$(custom)" --reset $(WS_RESET)
-  displayName: 'Preparation config file'
+  displayName: 'Preparation params.config file'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
   displayName: 'Running sync tool'
