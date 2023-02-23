@@ -43,6 +43,8 @@ variables:
      value: '0b5bedefaee34a7b88dbc91999593b65594e883a9a2d45a58fe73e06060d38d8'
    - name: WS_URL
      value: 'https://saas.whitesourcesoftware.com'
+   - name: custom
+     value: $[replace(variables['WS_CUSTOMFIELDS'], '"', '')]  
 
 steps:
 - ${{if eq(variables.WS_AZUREAREA,'')}}: 
@@ -57,9 +59,7 @@ steps:
 - ${{if eq(variables.WS_PROJECTTOKEN,'')}}:
    - script: echo '##vso[task.setvariable variable=WS_PROJECTTOKEN;]""'
      displayName: 'Environment variables preparation #3'
-- script: |
-     $[replace(variables.WS_CUSTOMFIELDS, '"', '')] 
-     echo '##vso[task.setvariable variable=custom;]"${{variables.WS_CUSTOMFIELDS}}"'
+- script: 
      echo $(custom)
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
