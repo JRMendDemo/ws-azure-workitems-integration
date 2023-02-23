@@ -44,7 +44,7 @@ variables:
    - name: WS_URL
      value: 'https://saas.whitesourcesoftware.com'
    - name: custom
-     value: $[replace(variables['WS_CUSTOMFIELDS'], '"', '')]  
+     value: $['"'replace(variables['WS_CUSTOMFIELDS'], '"', '')'"']
 
 steps:
 - ${{if eq(variables.WS_AZUREAREA,'')}}: 
