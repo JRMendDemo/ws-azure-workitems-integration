@@ -25,18 +25,19 @@
 ## Installation on the Azure side:
 1. Create a **pipeline** in your Azure organization and config it using the [azure-pipelines.yml](https://github.com/whitesource-ps/ws-azure-workitems-integration/blob/master/azure-pipelines.yml)
 2. Configure the appropriate variables (secrets) in the Azure pipeline
+3. Configure the appropriate variables in the azure-pipelines.yml (Variables block)
 
 ### Command-Line Arguments and linked Azure variables
 | Parameter                          |  Type  | Azure variable       | Required | Description                                                                                                                                                                                                     |
 |:-----------------------------------|:------:|----------------------|:--------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **&#x2011;&#x2011;help**           | switch |                      |    No    | Show help and exit                                                                                                                                                                                              |
 | **&#x2011;&#x2011;url**            | string | WS_URL               |   Yes    | Mend server URL                                                                                                                                                                                                 |
-| **&#x2011;&#x2011;user-key**       | string | WS_USERKEY           |   Yes    | Mend User Key (Secret variable in Azure)                                                                                                                                                                        |
-| **&#x2011;&#x2011;api-key**        | string | WS_APIKEY            |   Yes    | Mend API Key  (Secret variable in Azure)                                                                                                                                                                        |
+| **&#x2011;&#x2011;user-key**       | string | WS_USERKEY (secret)  |   Yes    | Mend User Key                                                                                                                                                                        |
+| **&#x2011;&#x2011;api-key**        | string | WS_APIKEY  (secret)  |   Yes    | Mend API Key                                                                                                                                                                          |
 | **&#x2011;&#x2011;azureurl**       | string | WS_AZUREURL          |    No    | Azure Server URL (default: `https://dev.azure.com/` )                                                                                                                                                           | 
 | **&#x2011;&#x2011;azureorg**       | string | WS_AZUREORG          |   Yes    | Azure Organization Name                                                                                                                                                                                         | 
 | **&#x2011;&#x2011;azurearea**      | string | WS_AZUREAREA         |    No    | **FULL** path of Azure Area (default: Azure Project root)*                                                                                                                                                      | 
-| **&#x2011;&#x2011;azurepat**       | string | WS_AZUREPAT          |   Yes    | Azure PAT ([Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows)) (Secret variable in Azure)  |
+| **&#x2011;&#x2011;azurepat**       | string | WS_AZUREPAT (secret) |   Yes    | Azure PAT ([Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows))   |
 | **&#x2011;&#x2011;azureproject**   | string | WS_AZUREPROJECT      |   Yes    | Azure project name                                                                                                                                                                                              |
 | **&#x2011;&#x2011;azuretype**      | string | WS_AZURETYPE         |    No    | Type of created Azure object (default: `Task`)***.                                                                                                                                                              |
 | **&#x2011;&#x2011;wsprojecttoken** | string | WS_PROJECTTOKEN      |    No    | List of all your project's tokens that should be INCLUDED in the Sync process (separated by a comma)                                                                                                            |
@@ -68,6 +69,7 @@
 SomeCustomField1::MEND:library.localPaths&Some Free Text;SomeCustomField2::MEND:policy.owner.email
 1. **SomeCustomField1** and **SomeCustomField2** are names of Custom Azure Fields 
 2. **MEND:** This is a special operator that indicates that it is followed by the name of the Mend object.
-3. **library.localPath** and **policy.owner.email** are names of Mend objects
-4. **;** is a separator of different values for **SomeCustomField1** or **SomeCustomField2** field
-5. Pairs [Some custom field]::[Custom value] separated by **&** 
+3. **library.localPath** and **policy.owner.email** are example names of Mend objects
+4. **;** separates **SomeCustomField1** and **SomeCustomField2** fields
+5. **&** separates objects in the [Some custom field]::[Custom value] block.  
+   1. In the example values **MEND:library.localPaths** and **Some Free Text** separated by **&** 
