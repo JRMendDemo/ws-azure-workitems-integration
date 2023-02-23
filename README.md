@@ -73,3 +73,65 @@ SomeCustomField1::MEND:library.localPaths&Some Free Text;SomeCustomField2::MEND:
 4. **;** separates **SomeCustomField1** and **SomeCustomField2** fields
 5. **&** separates objects in the [Some custom field]::[Custom value] block.  
    1. In the example values **MEND:library.localPaths** and **Some Free Text** separated by **&** 
+
+### Using Command-line interface
+Using the tool as a stand-alone script on a local computer/some remote server needs to configure two config files **params.config** and **workitem_types.json**.  
+The structure of **params.config**:  
+**[DEFAULT]**  
+wsuserkey =   
+apikey =  
+wsurl =  
+azureurl =  
+azureorg =  
+azurepat =   
+azurearea =   
+modificationtypes =   
+reset =  
+utcdelta =  
+azuretype =  
+**[links]**  
+azureproject =  
+wsproducttoken =  
+wsprojecttoken =  
+
+The **workitem_types.json** file contains a structure of mandatory and custom fields that could be used for creating work items per work item type.
+
+The example of **workitem_types.json** for work item type “Task”.  
+```json
+{
+    "name": "Task", # The name of type
+    "referenceName": "Microsoft.VSTS.WorkItemTypes.Task",
+    "fields": [
+        {
+            "referenceName": "System.IterationId",
+            "name": "Iteration ID",
+            "defaultValue": null
+        },
+        {
+            "referenceName": "System.AreaId",
+            "name": "Area ID",
+            "defaultValue": null
+        },
+        {
+            "referenceName": "System.Title",
+            "name": "Title",
+            "defaultValue": null
+        },
+        {
+            "referenceName": "System.State",
+            "name": "State",
+            "defaultValue": "To Do"
+        },
+        {
+            "referenceName": "Custom.CustomMandatory",
+            "name": "Custom Mandatory",
+            "defaultValue": "MEND:library.coordinates" # This value could be defined by rules which described above
+        },
+        {
+            "referenceName": "Custom.CustomOptional",
+            "name": "Custom Optional",
+            "defaultValue": "MEND:policy.owner.email" # This value could be defined by rules which described above
+        }
+    ]
+}
+```
