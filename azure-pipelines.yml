@@ -44,7 +44,7 @@ variables:
    - name: WS_URL
      value: 'https://saas.whitesourcesoftware.com'
    - name: custom
-     value: $['"'+replace(variables['WS_CUSTOMFIELDS'], '"', '')+'"']
+     value: $[replace(variables['WS_CUSTOMFIELDS'], '"', '')]
 
 steps:
 - ${{if eq(variables.WS_AZUREAREA,'')}}: 
@@ -59,8 +59,7 @@ steps:
 - ${{if eq(variables.WS_PROJECTTOKEN,'')}}:
    - script: echo '##vso[task.setvariable variable=WS_PROJECTTOKEN;]""'
      displayName: 'Environment variables preparation #3'
-- script: 
-     echo $(custom)
+
 - script: python -m pip install --upgrade pip && pip install --target=$(workingDirectory)$(RunScript) -r ./requirements.txt
   displayName: 'Install dependencies'
 
@@ -68,7 +67,7 @@ steps:
   condition: and(eq(variables.WS_PRODUCTTOKEN,''), eq(variables.WS_PROJECTTOKEN,''))
   displayName: 'Check product/project token'
 
-- script: python update_param.py --user-key $(WS_USERKEY) --api-key $(WS_APIKEY) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(WS_AZUREPAT) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields $(WS_CUSTOMFIELDS) --reset $(WS_RESET)
+- script: python update_param.py --user-key $(WS_USERKEY) --api-key $(WS_APIKEY) --url $(WS_URL) --azureurl $(WS_AZUREURL) --azureorg $(WS_AZUREORG) --azurepat $(WS_AZUREPAT) --type $(WS_MODIFICATIONTYPES) --utcdelta $(WS_UTCDELTA) --azureproject $(WS_AZUREPROJECT) --wsproducttoken $(WS_PRODUCTTOKEN) --wsprojecttoken $(WS_PROJECTTOKEN) --azurearea $(areapath) --azuretype $(WS_AZURETYPE) --customfields "$(custom)" --reset $(WS_RESET)
   displayName: 'Preparation config file'
 
 - script: python ws_azure_workitems_integration/wi_integration.py
