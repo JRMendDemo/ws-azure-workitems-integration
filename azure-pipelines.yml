@@ -30,7 +30,7 @@ variables:
    - name: WS_AZUREURL
      value: 'https://dev.azure.com/'
    - name: WS_CUSTOMFIELDS
-     value: '"CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email"'
+     value: 'CustomMandatory::Add Data-&MEND:library.coordinates;CustomOptional::MEND:policy.owner.email'
    - name: WS_MODIFICATIONTYPES
      value: 'All'
    - name: WS_RESET
