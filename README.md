@@ -22,6 +22,9 @@
 * It is recommended to use a service user
 * A user must have permission to create and update Work Items tasks in the Azure DevOps organization 
 
+## Requirements in Mend App:
+1. Create an Issue Policy in Mend UI
+
 ## Installation on the Azure side:
 1. Create a **pipeline** in your Azure organization and config it using the ![azure-pipelines.yml](https://github.com/whitesource-ps/ws-azure-workitems-integration/blob/master/azure-pipelines.yml)
 2. Configure the appropriate variables (secrets) in the Azure pipeline
